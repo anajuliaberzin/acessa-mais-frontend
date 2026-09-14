@@ -1,13 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
+  imports: [RouterLink],
   template: `
     <main class="landing-page">
       <section class="hero-shell">
         <header class="topbar">
-          <a class="brand" href="/">
+          <a class="brand" routerLink="/home">
             <span class="brand-mark" aria-hidden="true">♿</span>
             <span>Acessa+</span>
           </a>
@@ -19,6 +22,11 @@ import { Component } from '@angular/core';
             <a href="#reportar">Reportar</a>
             <a href="#perfil">Perfil</a>
             <a href="#admin">Admin</a>
+            @if (auth.isAuthenticated()) {
+              <button class="logout-btn" type="button" (click)="auth.logout()">Sair</button>
+            } @else {
+              <a routerLink="/login">Entrar</a>
+            }
           </nav>
         </header>
 
@@ -269,6 +277,15 @@ import { Component } from '@angular/core';
       text-decoration: none;
       font-weight: 600;
       transition: color 0.2s ease;
+    }
+
+    .logout-btn {
+      border: 0;
+      background: transparent;
+      color: #5a6380;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
     }
 
     .topnav a:hover,
@@ -633,4 +650,6 @@ import { Component } from '@angular/core';
     }
   `],
 })
-export class HomeComponent {}
+export class HomeComponent {
+  readonly auth = inject(AuthService);
+}
