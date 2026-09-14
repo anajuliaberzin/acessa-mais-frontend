@@ -1,5 +1,6 @@
 :root {
   color-scheme: light;
+  --app-font: Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
 html,
@@ -9,10 +10,15 @@ body {
 
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f8f9fa;
+  font-family: var(--app-font);
+  background: #f6f8ff;
 }
 
-.app-shell {
-  min-height: 100vh;
+* {
+  box-sizing: border-box;
+}
+
+button,
+input {
+  font: inherit;
 }
