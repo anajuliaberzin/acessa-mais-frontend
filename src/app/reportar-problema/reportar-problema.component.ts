@@ -19,6 +19,9 @@ export class ReportarProblemaComponent {
   readonly estado = signal<'formulario' | 'enviando' | 'sucesso' | 'erro'>('formulario');
   readonly obtendoLocalizacao = signal(false);
   readonly previaFoto = signal<string | null>(null);
+  readonly protocolo = signal('');
+  readonly erroFoto = signal('');
+  readonly erroEnvio = signal('');
 
   form!: FormGroup;
 
@@ -31,6 +34,7 @@ export class ReportarProblemaComponent {
     // Criado no construtor (e não como inicializador de campo) porque `fb`
     // só fica disponível depois que o Angular injeta as dependências.
     this.form = this.fb.group({
+      confirmadoSorocaba: [false, Validators.requiredTrue],
       endereco: ['', [Validators.required, Validators.minLength(5)]],
       latitude: this.fb.control<number | null>(null),
       longitude: this.fb.control<number | null>(null),
@@ -77,9 +81,21 @@ export class ReportarProblemaComponent {
     );
   }
 
+  limparCoordenadas(): void {
+    this.form.patchValue({ latitude: null, longitude: null });
+  }
+
   aoSelecionarFoto(evento: Event): void {
     const input = evento.target as HTMLInputElement;
     const arquivo = input.files?.[0] ?? null;
+    this.erroFoto.set('');
+    if (arquivo && (!['image/jpeg', 'image/png', 'image/webp'].includes(arquivo.type) || arquivo.size > 5 * 1024 * 1024)) {
+      this.erroFoto.set('Envie JPEG, PNG ou WebP de até 5 MB.');
+      this.arquivoFoto = null;
+      this.previaFoto.set(null);
+      input.value = '';
+      return;
+    }
     this.arquivoFoto = arquivo;
 
     if (!arquivo) {
@@ -99,16 +115,19 @@ export class ReportarProblemaComponent {
   }
 
   enviar(): void {
+    if (this.estado() === 'enviando') return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
     this.estado.set('enviando');
+    this.erroEnvio.set('');
     const valores = this.form.getRawValue();
 
     this.ocorrenciaService
       .enviarOcorrencia({
+        confirmadoSorocaba: valores.confirmadoSorocaba === true,
         endereco: valores.endereco ?? '',
         latitude: valores.latitude ?? null,
         longitude: valores.longitude ?? null,
@@ -117,12 +136,17 @@ export class ReportarProblemaComponent {
         foto: this.arquivoFoto,
       })
       .subscribe({
-        next: () => this.estado.set('sucesso'),
-        error: () => this.estado.set('erro'),
+        next: (ocorrencia) => { this.protocolo.set(ocorrencia.protocolo); this.estado.set('sucesso'); },
+        error: (erro) => {
+          this.erroEnvio.set(erro.status === 400 ? 'Confira os campos e a foto enviada. ' + Object.values(erro.error ?? {}).flat().join(' ') : 'Não foi possível enviar. Tente novamente.');
+          this.estado.set('erro');
+        },
       });
   }
 
   novoReporte(): void {
+    this.protocolo.set('');
+    this.erroFoto.set('');
     this.form.reset();
     this.arquivoFoto = null;
     this.previaFoto.set(null);

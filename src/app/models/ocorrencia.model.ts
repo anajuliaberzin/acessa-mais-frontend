@@ -25,6 +25,7 @@ export const TIPOS_PROBLEMA: { valor: TipoProblema; rotulo: string }[] = [
 ];
 
 export interface NovaOcorrencia {
+  confirmadoSorocaba: boolean;
   endereco: string;
   latitude: number | null;
   longitude: number | null;
@@ -33,8 +34,9 @@ export interface NovaOcorrencia {
   foto?: File | null;
 }
 
-export interface Ocorrencia extends Omit<NovaOcorrencia, 'foto'> {
-  id: string;
+export interface Ocorrencia extends Omit<NovaOcorrencia, 'foto' | 'confirmadoSorocaba'> {
+  protocolo: string;
+  id: number;
   dataCriacao: string;
   status: 'em_analise' | 'confirmada' | 'resolvida';
   fotoUrl?: string | null;

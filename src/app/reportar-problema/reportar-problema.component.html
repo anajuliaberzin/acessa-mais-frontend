@@ -28,6 +28,7 @@
             class="form-control"
             placeholder="Pesquise um endereço"
             formControlName="endereco"
+            (input)="limparCoordenadas()"
             [class.is-invalid]="f.endereco.invalid && f.endereco.touched"
             aria-describedby="enderecoAjuda enderecoErro"
           />
@@ -49,6 +50,8 @@
         </button>
       </div>
 
+      <label class="d-block mb-3"><input type="checkbox" formControlName="confirmadoSorocaba" /> Confirmo que este endereço fica em Sorocaba/SP.</label>
+      <p class="text-danger" *ngIf="f.confirmadoSorocaba.invalid && f.confirmadoSorocaba.touched">Confirme a localização em Sorocaba/SP.</p>
       <!-- Tipo de problema -->
       <div class="mb-4">
         <label for="tipoProblema" class="form-label fw-semibold">Tipo de problema</label>
@@ -92,7 +95,8 @@
         <!-- Fora dos blocos *ngIf de propósito: uma variável de referência de
              template (#inputFoto) só é visível na mesma view em que foi
              declarada, e não dentro de outro *ngIf irmão. -->
-        <input id="foto" type="file" accept="image/*" class="visually-hidden" (change)="aoSelecionarFoto($event)" #inputFoto />
+        <input id="foto" type="file" accept="image/jpeg,image/png,image/webp" class="visually-hidden" (change)="aoSelecionarFoto($event)" #inputFoto />
+        <p *ngIf="erroFoto()" role="alert" class="text-danger">{{ erroFoto() }}</p>
 
         <div class="upload-area" *ngIf="!previaFoto()">
           <label for="foto" class="upload-label">
@@ -110,7 +114,7 @@
       </div>
 
       <div class="alert alert-danger" role="alert" *ngIf="estado() === 'erro'">
-        Não foi possível enviar sua ocorrência agora. Tente novamente em instantes.
+        {{ erroEnvio() }}
       </div>
 
       <button type="submit" class="btn btn-acessa w-100 py-2 fw-semibold" [disabled]="estado() === 'enviando'">
@@ -123,6 +127,8 @@
     <div *ngIf="estado() === 'sucesso'" class="text-center py-5" role="status" aria-live="polite">
       <i class="bi bi-check-circle-fill text-acessa display-4" aria-hidden="true"></i>
       <h2 class="h4 fw-bold mt-3">Ocorrência enviada!</h2>
+      <p>Protocolo: <strong>{{ protocolo() }}</strong></p>
+      <a routerLink="/ocorrencias">Acompanhar minhas ocorrências</a>
       <p class="text-body-secondary">
         Obrigado por contribuir. Sua ocorrência será analisada e ajudará outras pessoas a planejar seus deslocamentos.
       </p>
