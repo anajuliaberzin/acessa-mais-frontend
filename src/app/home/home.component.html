@@ -1,0 +1,64 @@
+<main class="landing-page">
+  <section class="hero-shell">
+    <header class="topbar">
+      <a class="brand" routerLink="/home"><span class="brand-mark" aria-hidden="true">♿</span>Acessa+</a>
+      <nav class="topnav" aria-label="Navegação principal">
+        <a href="#inicio">Início</a><a href="#resultados" (click)="todos()">Consultar locais</a>
+        <a routerLink="/rotas">Rotas</a><a routerLink="/reportar">Reportar</a>
+        <a routerLink="/perfil">Perfil</a>
+        @if (auth.isAuthenticated()) { <button class="logout-btn" (click)="auth.logout()">Sair</button> }
+        @else { <a routerLink="/login">Entrar</a> }
+      </nav>
+    </header>
+    <div class="hero-content" id="inicio">
+      <span class="eyebrow">Acessibilidade urbana em Sorocaba/SP</span>
+      <h1>Encontre lugares que <span>realmente</span> são acessíveis.</h1>
+      <p class="hero-copy">Consulte recursos de acessibilidade e contribua para uma cidade melhor.</p>
+      <form (ngSubmit)="buscar()">
+        <label class="search-label" for="search">Qual local você procura?</label>
+        <div class="search-row">
+          <div class="search-box"><input id="search" name="nome" [(ngModel)]="nome" placeholder="Digite o nome do local" /></div>
+          <button class="primary-btn" type="submit">Buscar</button>
+        </div>
+        <div class="chips">
+          <label>Categoria <select name="categoria" [(ngModel)]="categoria" (ngModelChange)="buscar()"><option value="">Todas</option>@for (item of categorias(); track item) { <option [value]="item">{{ item }}</option> }</select></label>
+          <label>Necessidade <select name="necessidade" [(ngModel)]="necessidade" (ngModelChange)="buscar()"><option value="">Todas</option><option value="mobilidade">Mobilidade</option><option value="visual">Visual</option><option value="auditiva">Auditiva</option></select></label>
+          <label>Recurso <select name="recurso" [(ngModel)]="recurso" (ngModelChange)="buscar()"><option value="">Todos</option>@for (item of recursos | keyvalue; track item.key) { <option [value]="item.key">{{ item.value }}</option> }</select></label>
+        </div>
+      </form>
+      <div class="chips" aria-label="Atalhos por categoria">
+        @for (item of categorias(); track item) { <button type="button" (click)="selecionarCategoria(item)">{{ item }}</button> }
+        <button type="button" (click)="todos()">Limpar filtros / todos os locais</button>
+      </div>
+    </div>
+  </section>
+  <section class="places-section" id="resultados" aria-live="polite" [attr.aria-busy]="carregando()">
+    <div class="section-header section-header--split">
+      <div><h2>{{ destaque ? 'Locais mais acessíveis' : 'Resultados da busca' }}</h2><p>Nota calculada pelos recursos cadastrados. Avaliações dos usuários são exibidas separadamente.</p></div>
+      <button class="secondary-btn" (click)="mostrarDestaques()">Ver destaques</button>
+    </div>
+    @if (erro()) { <p role="alert">{{ erro() }}</p><button (click)="carregar(); carregarCategorias()">Tentar novamente</button> }
+    @if (carregando()) { <p role="status">Carregando locais…</p> }
+    @if (!carregando() && !erro() && !pagina()?.count) { <p>{{ destaque ? 'Ainda não há locais com nota calculada. Consulte todos os locais.' : 'Nenhum local encontrado com esses filtros.' }}</p> }
+    <div class="places-grid">
+      @for (local of pagina()?.results; track local.id) {
+        <article class="place-card">
+          <h3>{{ local.nome }}</h3><p class="place-meta">{{ local.categoria }} · Sorocaba/SP</p><p>{{ local.endereco }}</p>
+          @if (local.acessibilidade.nota !== null) { <div class="score">{{ local.acessibilidade.nota | number:'1.1-1' }}/100 · {{ local.acessibilidade.classificacao }}</div> }
+          @else { <p>Nota não calculada</p> }
+          <div class="tags">@for (item of local.recursos | keyvalue; track item.key) { @if (item.value === 'atendido') { <span>{{ recursos[item.key] }}</span> } }</div>
+          @if (local.media_avaliacoes !== null) { <p>Avaliações dos usuários: {{ local.media_avaliacoes | number:'1.1-1' }}/5 ({{ local.total_avaliacoes }})</p> }
+          <button class="secondary-btn" (click)="abrir(local)">Ver informações</button>
+        </article>
+      }
+    </div>
+    @if (pagina(); as p) { <div class="chips"><button [disabled]="!p.previous || carregando()" (click)="mudarPagina(-1)">Anterior</button><span>Página {{ numeroPagina }} · {{ p.count }} locais</span><button [disabled]="!p.next || carregando()" (click)="mudarPagina(1)">Próxima</button></div> }
+    @if (selecionado(); as local) {
+      <section class="place-card mt-4" aria-labelledby="info-local" tabindex="-1" id="info-local-painel">
+        <h2 id="info-local">{{ local.nome }}</h2><p>{{ local.endereco }}</p><p>{{ local.descricao }}</p>
+        @for (foto of local.fotos; track foto.id) { <figure><img [src]="foto.foto" [alt]="foto.legenda || local.nome" style="max-width:100%;max-height:240px"/><figcaption>{{ foto.legenda }}</figcaption></figure> }
+        <a routerLink="/reportar">Reportar problema</a> · <button (click)="selecionado.set(null)">Fechar informações</button>
+      </section>
+    }
+  </section>
+</main>
