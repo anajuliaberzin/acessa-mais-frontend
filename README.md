@@ -17,6 +17,18 @@ Frontend web do projeto ACESSA+ para consulta de locais e informações de acess
 
 Execute `npx ng test --watch=false --include=src/app/auth/auth.spec.ts` para os testes de autenticação e `npm run build` para compilar.
 
+## Rotas acessíveis (integradas ao backend)
+
+- Acesse `/rotas`. A consulta é pública e envia `POST /api/rotas/comparar/` usando `API_BASE_URL`.
+- Informe latitude e longitude de origem/destino em Sorocaba. Nesta etapa não há busca por endereço, geocodificação ou GPS.
+- Configure `ROUTING_API_KEY` no `.env` **do backend** e reinicie o Django. A chave nunca é enviada pelo frontend nem incluída no bundle.
+- Inicie o backend em `http://127.0.0.1:8000` e abra o frontend em `http://localhost:4200/rotas`. A origem precisa constar em `CORS_ALLOWED_ORIGINS` do backend.
+- Tempos, distâncias, barreiras e geometria vêm da API. Não existe fallback para mocks; falhas de rede, validação, ausência de rota, indisponibilidade e timeout têm mensagens próprias.
+- A rota rápida inicia selecionada. As demais são rotuladas como alternativas; `rota_acessivel: null` exibe a limitação. Score nulo é mostrado como “não avaliada”, nunca como zero.
+- O SVG existente desenha as coordenadas GeoJSON recebidas em um enquadramento comum às opções. Não utiliza o antigo desenho fixo de ruas, não calcula rotas e ainda não possui mapa base/cartografia. Tab e setas permitem trocar a seleção.
+- Editar coordenadas cancela requisições pendentes e limpa resultados. O layout adapta-se a uma coluna até 800 px.
+- Testes: `npm test -- --watch=false`; build: `npm run build`. Os testes regulares mockam HTTP e não consomem quota externa.
+
 ## Tecnologias
 
 - Angular

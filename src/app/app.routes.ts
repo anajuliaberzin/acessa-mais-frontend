@@ -2,6 +2,11 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: 'rotas',
+    loadComponent: () => import('./rotas/rotas.component').then((m) => m.RotasComponent),
+    title: 'Rotas acessíveis | ACESSA+',
+  },
+  {
     path: 'login',
     loadComponent: () => import('./auth/login.component').then((module) => module.LoginComponent),
   },

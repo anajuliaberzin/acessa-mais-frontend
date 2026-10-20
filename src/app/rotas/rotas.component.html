@@ -1,0 +1,196 @@
+<main class="routes-page">
+  <a routerLink="/home" class="back-link"
+    ><i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar ao início</a
+  >
+  <header class="page-heading">
+    <span class="eyebrow"
+      ><i class="bi bi-signpost-split" aria-hidden="true"></i> Planeje seu caminho</span
+    >
+    <h1>Rotas acessíveis</h1>
+    <p>Compare o tempo de percurso e as barreiras informadas para cada caminho.</p>
+  </header>
+  <form
+    class="search-panel"
+    (ngSubmit)="comparar()"
+    novalidate
+    aria-label="Comparar rotas"
+    aria-describedby="coordinates-note"
+  >
+    @for (ponto of pontos; track ponto.id) {
+      <fieldset>
+        <legend class="h5">{{ ponto.nome }}</legend>
+        <label [for]="ponto.id + '-latitude'">Latitude da {{ ponto.nome.toLowerCase() }}</label>
+        <input
+          [id]="ponto.id + '-latitude'"
+          [name]="ponto.id + '-latitude'"
+          type="number"
+          step="any"
+          min="-90"
+          max="90"
+          required
+          [(ngModel)]="ponto.latitude"
+          (ngModelChange)="limparConsulta()"
+          placeholder="Ex.: -23.5015"
+          [attr.aria-invalid]="consultou() && invalido(ponto.latitude, 90)"
+          [attr.aria-describedby]="erro() ? 'form-error' : 'coordinates-note'"
+        />
+        <label [for]="ponto.id + '-longitude'" class="mt-3"
+          >Longitude da {{ ponto.nome.toLowerCase() }}</label
+        >
+        <input
+          [id]="ponto.id + '-longitude'"
+          [name]="ponto.id + '-longitude'"
+          type="number"
+          step="any"
+          min="-180"
+          max="180"
+          required
+          [(ngModel)]="ponto.longitude"
+          (ngModelChange)="limparConsulta()"
+          placeholder="Ex.: -47.4526"
+          [attr.aria-invalid]="consultou() && invalido(ponto.longitude, 180)"
+          [attr.aria-describedby]="erro() ? 'form-error' : 'coordinates-note'"
+        />
+      </fieldset>
+    }
+    <button class="compare-btn" type="submit" [disabled]="carregando()">
+      {{ carregando() ? 'Consultando…' : 'Comparar rotas' }}
+    </button>
+    @if (erro()) {
+      <p id="form-error" class="form-error" role="alert">{{ erro() }}</p>
+    }
+  </form>
+  <p id="coordinates-note" class="demo-note">
+    Informe coordenadas de Sorocaba/SP. A busca por endereço ainda não está disponível.
+  </p>
+  <div class="comparison-layout">
+    <section aria-labelledby="options-title">
+      <h2 id="options-title">Compare os trajetos</h2>
+      <div role="status" aria-live="polite" aria-atomic="true" class="result-status">
+        @if (carregando()) {
+          Consultando trajetos…
+        } @else if (selecionada(); as ativa) {
+          {{ rotas().length }} opção(ões) encontrada(s). {{ ativa.nome }} selecionada:
+          {{ ativa.tempo_minutos }} min.
+        } @else if (!consultou()) {
+          Informe a origem e o destino para consultar as rotas.
+        }
+        {{ mensagem() }}
+      </div>
+      @if (semAcessivel()) {
+        <p class="accessibility-note">
+          Rota acessível não determinada. As alternativas abaixo não têm acessibilidade confirmada.
+        </p>
+      }
+      @if (rotas().length) {
+        <fieldset>
+          <legend class="visually-hidden">Selecione o trajeto exibido</legend>
+          @for (rota of rotas(); track rota.id) {
+            <label
+              class="route-card"
+              [class.selected]="selecionada()?.id === rota.id"
+              [class.accessible]="rota.id === 'acessivel' && rota.acessibilidade_avaliada"
+            >
+              <span class="card-heading">
+                <input
+                  type="radio"
+                  name="rota"
+                  [value]="rota.id"
+                  [checked]="selecionada()?.id === rota.id"
+                  (change)="selecionada.set(rota)"
+                  [attr.aria-describedby]="'details-' + rota.id"
+                />
+                <span class="route-name">{{ rota.nome }}</span>
+              </span>
+              <span class="route-details" [id]="'details-' + rota.id">
+                <span class="metrics"
+                  ><strong>{{ rota.tempo_minutos | number: '1.0-2' }} min</strong> ·
+                  {{ rota.distancia_metros | number: '1.0-0' }} m</span
+                >
+                <span class="score"
+                  >Acessibilidade:
+                  {{
+                    rota.score_acessibilidade !== null && rota.acessibilidade_avaliada
+                      ? rota.score_acessibilidade + '/100'
+                      : 'não avaliada'
+                  }}</span
+                >
+                <span
+                  >Avaliação {{ rota.acessibilidade_avaliada ? 'disponível' : 'parcial' }} ·
+                  confiança {{ rota.nivel_confianca }}</span
+                >
+                <span class="barriers-title">Barreiras informadas</span>
+                @for (barreira of rota.barreiras; track $index) {
+                  <span class="barrier"
+                    ><i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+                    {{ barreira.descricao }}</span
+                  >
+                } @empty {
+                  <span class="barrier"
+                    >Nenhuma barreira informada. Isso não garante um caminho sem obstáculos.</span
+                  >
+                }
+              </span>
+              <span class="selection-label">{{
+                selecionada()?.id === rota.id ? '✓ Trajeto selecionado' : 'Selecionar este trajeto'
+              }}</span>
+            </label>
+          }
+        </fieldset>
+      }
+    </section>
+    <section class="map-panel" aria-labelledby="map-title">
+      <div class="map-heading">
+        <h2 id="map-title">Traçado do percurso</h2>
+        <span class="mock-badge">Geometria da rota</span>
+      </div>
+      <svg viewBox="0 0 600 400" role="img" aria-labelledby="map-svg-title map-svg-description">
+        <title id="map-svg-title">
+          {{ selecionada() ? selecionada()!.nome + ' selecionada' : 'Nenhum trajeto selecionado' }}
+        </title>
+        <desc id="map-svg-description">
+          Geometria recebida do serviço de rotas, ajustada à tela, sem mapa de fundo. A e B indicam
+          os extremos do trajeto.
+        </desc>
+        <rect width="600" height="400" fill="#f5f6fa" />
+        @if (projecao(); as desenho) {
+          <path
+            class="active-route"
+            [attr.data-route]="selecionada()!.id"
+            [attr.d]="desenho.d"
+            fill="none"
+            stroke="#5850c9"
+            stroke-width="6"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+          />
+          <g fill="#1a2340" stroke="#fff" stroke-width="3">
+            <circle [attr.cx]="desenho.inicio[0]" [attr.cy]="desenho.inicio[1]" r="16" />
+            <circle [attr.cx]="desenho.fim[0]" [attr.cy]="desenho.fim[1]" r="16" />
+          </g>
+          <g fill="#fff" text-anchor="middle" font-size="16" font-weight="700">
+            <text [attr.x]="desenho.inicio[0]" [attr.y]="desenho.inicio[1] + 5">A</text>
+            <text [attr.x]="desenho.fim[0]" [attr.y]="desenho.fim[1] + 5">B</text>
+          </g>
+        }
+      </svg>
+      <div class="map-caption">
+        @if (selecionada(); as ativa) {
+          <p class="active-label">{{ ativa.nome }} ativa · {{ ativa.tempo_minutos }} min</p>
+          <p>
+            <strong>Origem solicitada:</strong> {{ pontos[0].latitude }}, {{ pontos[0].longitude }}
+          </p>
+          <p>
+            <strong>Destino solicitado:</strong> {{ pontos[1].latitude }}, {{ pontos[1].longitude }}
+          </p>
+          <p>
+            Traçado sem mapa de fundo. Os extremos podem ser ajustados pelo serviço à via mais
+            próxima.
+          </p>
+        } @else {
+          <p>Seu trajeto aparecerá aqui após a consulta.</p>
+        }
+      </div>
+    </section>
+  </div>
+</main>

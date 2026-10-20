@@ -18,7 +18,7 @@ import { AuthService } from '../auth/auth.service';
           <nav class="topnav" aria-label="Navegação principal">
             <a href="#inicio">Início</a>
             <a href="#explorar">Explorar</a>
-            <a href="#rotas">Rotas</a>
+            <a routerLink="/rotas">Rotas</a>
             <a routerLink="/reportar">Reportar</a>
             <a routerLink="/perfil">Perfil</a>
             <a href="#admin">Admin</a>
