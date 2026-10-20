@@ -1,0 +1,179 @@
+<main class="routes-page">
+  <a routerLink="/home" class="back-link"
+    ><i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar ao início</a
+  >
+  <header class="page-heading">
+    <span class="eyebrow"
+      ><i class="bi bi-signpost-split" aria-hidden="true"></i> Planeje seu caminho</span
+    >
+    <h1>Rotas acessíveis</h1>
+    <p>Compare o tempo de percurso e as barreiras de cada caminho.</p>
+  </header>
+
+  <form
+    class="search-panel"
+    (ngSubmit)="comparar()"
+    novalidate
+    aria-label="Comparar rotas"
+    aria-describedby="demo-note"
+  >
+    <div>
+      <label for="origem">Origem</label>
+      <input
+        id="origem"
+        name="origem"
+        [(ngModel)]="origem"
+        (ngModelChange)="limparConsulta()"
+        placeholder="Ex.: Praça Coronel Fernando Prestes"
+        required
+        maxlength="200"
+        [attr.aria-invalid]="consultou() && !origem.trim()"
+        [attr.aria-describedby]="erro() ? 'form-error' : null"
+      />
+    </div>
+    <div>
+      <label for="destino">Destino</label>
+      <input
+        id="destino"
+        name="destino"
+        [(ngModel)]="destino"
+        (ngModelChange)="limparConsulta()"
+        placeholder="Ex.: Biblioteca Municipal"
+        required
+        maxlength="200"
+        [attr.aria-invalid]="consultou() && !destino.trim()"
+        [attr.aria-describedby]="erro() ? 'form-error' : null"
+      />
+    </div>
+    <button class="compare-btn" type="submit">Comparar rotas</button>
+    @if (erro()) {
+      <p id="form-error" class="form-error" role="alert">{{ erro() }}</p>
+    }
+  </form>
+  <p id="demo-note" class="demo-note">
+    <i class="bi bi-info-circle" aria-hidden="true"></i>
+    Demonstração: trajetos, tempos e barreiras são simulados. O mapa é ilustrativo e não representa
+    os endereços informados.
+  </p>
+
+  <div class="comparison-layout">
+    <section aria-labelledby="options-title">
+      <h2 id="options-title">Compare os trajetos</h2>
+      <div role="status" aria-live="polite" aria-atomic="true" class="result-status">
+        @if (selecionada(); as ativa) {
+          2 opções encontradas. {{ ativa.nome }} selecionada: {{ ativa.minutos }} min,
+          acessibilidade {{ ativa.score }}/100.
+        } @else if (consultou() && !erro()) {
+          Nenhum trajeto para comparar: origem e destino são iguais. Informe lugares diferentes.
+        } @else {
+          Informe a origem e o destino para visualizar duas opções de trajeto.
+        }
+      </div>
+      @if (rotas().length) {
+        <fieldset>
+          <legend class="visually-hidden">Selecione a rota exibida no mapa</legend>
+          @for (rota of rotas(); track rota.id) {
+            <label
+              class="route-card"
+              [class.selected]="selecionada()?.id === rota.id"
+              [class.accessible]="rota.id === 'acessivel'"
+            >
+              <span class="card-heading">
+                <input
+                  type="radio"
+                  name="rota"
+                  [value]="rota.id"
+                  [checked]="selecionada()?.id === rota.id"
+                  (change)="selecionada.set(rota)"
+                  [attr.aria-describedby]="'details-' + rota.id"
+                />
+                <span class="route-name">{{ rota.nome }}</span>
+              </span>
+              <span class="route-details" [id]="'details-' + rota.id">
+                <span class="metrics"
+                  ><strong>{{ rota.minutos }} min</strong> <span>· {{ rota.distancia }}</span></span
+                >
+                <span class="score">Acessibilidade: {{ rota.score }}/100</span>
+                <span class="barriers-title">Principais barreiras</span>
+                @for (barreira of rota.barreiras; track barreira) {
+                  <span class="barrier"
+                    ><i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+                    {{ barreira }}</span
+                  >
+                }
+              </span>
+              <span class="selection-label">{{
+                selecionada()?.id === rota.id ? '✓ Selecionada no mapa' : 'Selecionar esta rota'
+              }}</span>
+            </label>
+          }
+        </fieldset>
+      }
+    </section>
+
+    <section class="map-panel" aria-labelledby="map-title">
+      <div class="map-heading">
+        <h2 id="map-title">Visualização no mapa</h2>
+        <span class="mock-badge">Ilustrativo</span>
+      </div>
+      <svg viewBox="0 0 600 400" role="img" aria-labelledby="map-svg-title map-svg-description">
+        <title id="map-svg-title">
+          {{
+            selecionada()
+              ? selecionada()!.nome + ' selecionada'
+              : 'Mapa ilustrativo sem rota selecionada'
+          }}
+        </title>
+        <desc id="map-svg-description">
+          Esquema sem escala. O traçado destacado liga A, origem, a B, destino. Os detalhes de
+          acessibilidade estão nas opções de trajeto.
+        </desc>
+        <defs>
+          <pattern id="blocks" width="150" height="90" patternUnits="userSpaceOnUse">
+            <rect x="12" y="12" width="126" height="66" rx="12" fill="#e3e7f0" />
+          </pattern>
+        </defs>
+        <rect width="600" height="400" fill="#f5f6fa" />
+        <rect width="600" height="400" fill="url(#blocks)" />
+        <rect x="415" y="235" width="160" height="110" rx="25" fill="#d4eadb" />
+        <text x="495" y="295" text-anchor="middle" fill="#365841" font-size="18">Praça</text>
+        <g fill="none" stroke="#fff" stroke-width="28" stroke-linejoin="round">
+          <path
+            d="M 0 120 H 600 M 0 210 H 600 M 0 300 H 390 M 80 0 V 400 M 240 0 V 400 M 390 0 V 400 M 520 0 V 210"
+          />
+        </g>
+        @if (selecionada(); as ativa) {
+          <path
+            class="active-route"
+            [attr.data-route]="ativa.id"
+            [attr.d]="ativa.tracado"
+            fill="none"
+            [attr.stroke]="ativa.id === 'acessivel' ? '#16704a' : '#5850c9'"
+            stroke-width="9"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+          />
+          <g fill="#1a2340" stroke="#fff" stroke-width="3">
+            <circle cx="80" cy="300" r="19" />
+            <circle cx="520" cy="120" r="19" />
+          </g>
+          <g fill="#fff" text-anchor="middle" font-size="18" font-weight="700">
+            <text x="80" y="306">A</text>
+            <text x="520" y="126">B</text>
+          </g>
+        }
+      </svg>
+      <div class="map-caption">
+        @if (selecionada(); as ativa) {
+          <p class="active-label">
+            {{ ativa.nome }} ativa · {{ ativa.minutos }} min · {{ ativa.distancia }}
+          </p>
+          <p><strong>A · Origem:</strong> {{ origem.trim() }}</p>
+          <p><strong>B · Destino:</strong> {{ destino.trim() }}</p>
+        } @else {
+          <p>Seu trajeto aparecerá aqui após a comparação.</p>
+        }
+      </div>
+    </section>
+  </div>
+</main>
