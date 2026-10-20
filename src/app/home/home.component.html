@@ -6,6 +6,7 @@
         <a href="#inicio">Início</a><a href="#resultados" (click)="todos()">Consultar locais</a>
         <a routerLink="/rotas">Rotas</a><a routerLink="/reportar">Reportar</a>
         <a routerLink="/ocorrencias">Minhas ocorrências</a><a routerLink="/perfil">Perfil</a>
+        <a routerLink="/painel">Painel municipal</a>
         @if (auth.isAuthenticated()) { <button class="logout-btn" (click)="auth.logout()">Sair</button> }
         @else { <a routerLink="/login">Entrar</a> }
       </nav>
