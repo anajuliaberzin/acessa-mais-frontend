@@ -1,0 +1,133 @@
+<div class="container reportar-container py-4 py-md-5">
+  <div class="col-12 col-md-8 col-lg-6 mx-auto">
+
+    <a routerLink="/home" class="link-voltar mb-3 d-inline-flex align-items-center gap-1">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+      Voltar
+    </a>
+
+    <header class="mb-4">
+      <h1 class="h3 fw-bold mb-2">Reportar problema</h1>
+      <p class="text-body-secondary mb-0">
+        Descreva a barreira encontrada. Sua contribuição ajuda outras pessoas e o município.
+      </p>
+    </header>
+
+    <!-- Formulário -->
+    <form *ngIf="estado() !== 'sucesso'" [formGroup]="form" (ngSubmit)="enviar()" novalidate aria-labelledby="tituloFormulario">
+      <h2 id="tituloFormulario" class="visually-hidden">Formulário de reporte de problema de acessibilidade</h2>
+
+      <!-- Localização -->
+      <div class="mb-4">
+        <label for="endereco" class="form-label fw-semibold">Localização</label>
+        <div class="input-group">
+          <span class="input-group-text bg-white" aria-hidden="true"><i class="bi bi-geo-alt"></i></span>
+          <input
+            id="endereco"
+            type="text"
+            class="form-control"
+            placeholder="Pesquise um endereço"
+            formControlName="endereco"
+            [class.is-invalid]="f.endereco.invalid && f.endereco.touched"
+            aria-describedby="enderecoAjuda enderecoErro"
+          />
+        </div>
+        <div id="enderecoAjuda" class="form-text">Pesquise um endereço ou use sua localização atual.</div>
+        <div id="enderecoErro" class="invalid-feedback d-block" *ngIf="f.endereco.invalid && f.endereco.touched">
+          Informe um endereço válido (mínimo de 5 caracteres).
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-outline-secondary btn-sm mt-2 d-inline-flex align-items-center gap-2"
+          (click)="usarLocalizacaoAtual()"
+          [disabled]="obtendoLocalizacao()"
+        >
+          <span *ngIf="obtendoLocalizacao()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <i *ngIf="!obtendoLocalizacao()" class="bi bi-crosshair" aria-hidden="true"></i>
+          {{ obtendoLocalizacao() ? 'Obtendo localização…' : 'Usar localização atual' }}
+        </button>
+      </div>
+
+      <!-- Tipo de problema -->
+      <div class="mb-4">
+        <label for="tipoProblema" class="form-label fw-semibold">Tipo de problema</label>
+        <select
+          id="tipoProblema"
+          class="form-select"
+          formControlName="tipoProblema"
+          [class.is-invalid]="f.tipoProblema.invalid && f.tipoProblema.touched"
+          aria-describedby="tipoProblemaErro"
+        >
+          <option value="" disabled selected>Selecione o tipo de problema</option>
+          <option *ngFor="let tipo of tiposProblema" [value]="tipo.valor">{{ tipo.rotulo }}</option>
+        </select>
+        <div id="tipoProblemaErro" class="invalid-feedback d-block" *ngIf="f.tipoProblema.invalid && f.tipoProblema.touched">
+          Selecione o tipo de problema encontrado.
+        </div>
+      </div>
+
+      <!-- Descrição -->
+      <div class="mb-4">
+        <label for="descricao" class="form-label fw-semibold">Descrição</label>
+        <textarea
+          id="descricao"
+          class="form-control"
+          rows="4"
+          placeholder="Descreva o problema com o máximo de detalhes possível"
+          formControlName="descricao"
+          [class.is-invalid]="f.descricao.invalid && f.descricao.touched"
+          aria-describedby="descricaoErro"
+        ></textarea>
+        <div id="descricaoErro" class="invalid-feedback d-block" *ngIf="f.descricao.invalid && f.descricao.touched">
+          Descreva o problema com pelo menos 10 caracteres.
+        </div>
+      </div>
+
+      <!-- Foto opcional -->
+      <div class="mb-4">
+        <label for="foto" class="form-label fw-semibold">Adicionar foto (opcional)</label>
+        <p class="form-text mt-0">Envie uma imagem que ajude a identificar a barreira.</p>
+
+        <!-- Fora dos blocos *ngIf de propósito: uma variável de referência de
+             template (#inputFoto) só é visível na mesma view em que foi
+             declarada, e não dentro de outro *ngIf irmão. -->
+        <input id="foto" type="file" accept="image/*" class="visually-hidden" (change)="aoSelecionarFoto($event)" #inputFoto />
+
+        <div class="upload-area" *ngIf="!previaFoto()">
+          <label for="foto" class="upload-label">
+            <i class="bi bi-camera fs-3" aria-hidden="true"></i>
+            <span>Toque para escolher uma foto</span>
+          </label>
+        </div>
+
+        <div class="preview-foto" *ngIf="previaFoto()">
+          <img [src]="previaFoto()" alt="Pré-visualização da foto anexada ao reporte" />
+          <button type="button" class="btn btn-sm btn-outline-danger mt-2" (click)="removerFoto(inputFoto)">
+            <i class="bi bi-trash" aria-hidden="true"></i> Remover foto
+          </button>
+        </div>
+      </div>
+
+      <div class="alert alert-danger" role="alert" *ngIf="estado() === 'erro'">
+        Não foi possível enviar sua ocorrência agora. Tente novamente em instantes.
+      </div>
+
+      <button type="submit" class="btn btn-acessa w-100 py-2 fw-semibold" [disabled]="estado() === 'enviando'">
+        <span *ngIf="estado() === 'enviando'" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        {{ estado() === 'enviando' ? 'Enviando…' : 'Enviar ocorrência' }}
+      </button>
+    </form>
+
+    <!-- Mensagem de sucesso -->
+    <div *ngIf="estado() === 'sucesso'" class="text-center py-5" role="status" aria-live="polite">
+      <i class="bi bi-check-circle-fill text-acessa display-4" aria-hidden="true"></i>
+      <h2 class="h4 fw-bold mt-3">Ocorrência enviada!</h2>
+      <p class="text-body-secondary">
+        Obrigado por contribuir. Sua ocorrência será analisada e ajudará outras pessoas a planejar seus deslocamentos.
+      </p>
+      <button type="button" class="btn btn-acessa mt-2" (click)="novoReporte()">Reportar outro problema</button>
+    </div>
+
+  </div>
+</div>

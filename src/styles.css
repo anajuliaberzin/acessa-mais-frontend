@@ -1,3 +1,7 @@
+/* Bootstrap + ícones: usados pelas telas Reportar problema e Perfil */
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
 :root {
   color-scheme: light;
   --app-font: Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
