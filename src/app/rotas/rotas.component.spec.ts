@@ -1,107 +1,233 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { RouterTestingHarness } from '@angular/router/testing';
-import { routes } from '../app.routes';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { RotasComponent } from './rotas.component';
+import { ComparacaoApi, RotaApi } from './rotas.service';
+import { authInterceptor } from '../auth/auth.interceptor';
 
-describe('Rotas acessíveis', () => {
+const url = 'http://127.0.0.1:8000/api/rotas/comparar/';
+function resposta(): ComparacaoApi {
+  const rapida: RotaApi = {
+    tempo_minutos: 12,
+    distancia_metros: 950,
+    score_acessibilidade: null,
+    barreiras: [{ tipo: 'escada', descricao: 'Escada identificada', trecho: [0, 1] }],
+    acessibilidade_avaliada: false,
+    nivel_confianca: 'limitado',
+    geometria: {
+      type: 'LineString',
+      coordinates: [
+        [-47.4526, -23.5015],
+        [-47.46, -23.51],
+      ],
+    },
+  };
+  return {
+    rota_rapida: rapida,
+    rota_acessivel: null,
+    alternativas: [
+      {
+        ...rapida,
+        tempo_minutos: 17,
+        distancia_metros: 1200,
+        barreiras: [],
+        geometria: {
+          type: 'LineString',
+          coordinates: [
+            [-47.4526, -23.5015],
+            [-47.4526, -23.51],
+            [-47.46, -23.51],
+          ],
+        },
+      },
+    ],
+    acessibilidade_avaliada: false,
+    nivel_confianca: 'limitado',
+    mensagem: 'Não há dados suficientes para determinar uma rota mais acessível.',
+  };
+}
+
+describe('Rotas integradas à API', () => {
+  let http: HttpTestingController;
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        provideHttpClient(withInterceptors([authInterceptor])),
+        provideHttpClientTesting(),
+      ],
+    });
+    http = TestBed.inject(HttpTestingController);
+  });
+  afterEach(() => http.verify());
+
   async function setup() {
-    TestBed.configureTestingModule({ providers: [provideRouter(routes)] });
-    const harness = await RouterTestingHarness.create();
-    await harness.navigateByUrl('/rotas', RotasComponent);
-    const element = harness.routeNativeElement!;
-    async function preencher(origem: string, destino: string) {
-      for (const [id, value] of [
-        ['origem', origem],
-        ['destino', destino],
-      ]) {
+    const fixture = TestBed.createComponent(RotasComponent);
+    await fixture.whenStable();
+    const element = fixture.nativeElement as HTMLElement;
+    async function preencher(values = ['-23.5015', '-47.4526', '-23.5100', '-47.4600']) {
+      const ids = ['origem-latitude', 'origem-longitude', 'destino-latitude', 'destino-longitude'];
+      ids.forEach((id, i) => {
         const input = element.querySelector<HTMLInputElement>('#' + id)!;
-        input.value = value;
+        input.value = values[i];
         input.dispatchEvent(new Event('input'));
-      }
-      await harness.fixture.whenStable();
+      });
+      await fixture.whenStable();
     }
-    async function comparar() {
+    function enviar() {
       element.querySelector('form')!.dispatchEvent(new Event('submit', { cancelable: true }));
-      await harness.fixture.whenStable();
-      harness.detectChanges();
+      fixture.detectChanges();
     }
-    return { harness, element, preencher, comparar };
+    return { fixture, element, preencher, enviar };
   }
 
-  it('abre pela URL com campos rotulados e sem trajeto inicial', async () => {
+  it('inicia com quatro campos rotulados, sem resultados', async () => {
     const { element } = await setup();
-    expect(element.querySelector('h1')?.textContent).toContain('Rotas acessíveis');
-    for (const id of ['origem', 'destino']) {
-      expect(element.querySelector(`label[for="${id}"]`)).toBeTruthy();
-      expect(element.querySelector<HTMLInputElement>('#' + id)?.value).toBe('');
+    for (const input of element.querySelectorAll('input[type=number]')) {
+      expect(element.querySelector('label[for="' + input.id + '"]')).toBeTruthy();
     }
+    expect(element.querySelectorAll('input[type=number]')).toHaveLength(4);
     expect(element.querySelector('.active-route')).toBeNull();
-    expect(element.querySelectorAll('input[type="radio"]')).toHaveLength(0);
+    http.expectNone(url);
   });
 
-  it('valida campos ausentes e espaços em branco sem mostrar rotas', async () => {
-    const { element, preencher, comparar } = await setup();
-    await comparar();
-    expect(element.querySelector('[role="alert"]')?.textContent).toContain(
-      'Informe a origem e o destino',
-    );
-    expect(element.querySelector('#origem')?.getAttribute('aria-invalid')).toBe('true');
-    await preencher('Praça', '   ');
-    await comparar();
-    expect(element.querySelector('#destino')?.getAttribute('aria-invalid')).toBe('true');
-    expect(element.querySelector('.active-route')).toBeNull();
+  it('valida campos ausentes, limites e coordenadas iguais sem chamar API', async () => {
+    const { element, preencher, enviar } = await setup();
+    enviar();
+    expect(element.querySelector('[role=alert]')?.textContent).toContain('Informe a origem');
+    await preencher(['91', '-47', '-23', '-181']);
+    enviar();
+    expect(element.querySelector('#origem-latitude')?.getAttribute('aria-invalid')).toBe('true');
+    await preencher(['0', '0', '0', '0']);
+    enviar();
+    expect(element.querySelector('[role=status]')?.textContent).toContain('são iguais');
+    http.expectNone(url);
   });
 
-  it('compara as opções e atualiza seleção, anúncio e traçado nas duas direções', async () => {
-    const { element, harness, preencher, comparar } = await setup();
-    await preencher('Praça', 'Biblioteca');
-    await comparar();
+  it('envia coordenadas numéricas sem token e mostra carregamento', async () => {
+    const { element, preencher, enviar, fixture } = await setup();
+    await preencher();
+    enviar();
+    expect(element.querySelector<HTMLButtonElement>('button[type=submit]')?.disabled).toBe(true);
+    const request = http.expectOne(url);
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({
+      origem: { latitude: -23.5015, longitude: -47.4526 },
+      destino: { latitude: -23.51, longitude: -47.46 },
+    });
+    expect(request.request.headers.has('Authorization')).toBe(false);
+    request.flush(resposta());
+    await fixture.whenStable();
+    expect(element.querySelector<HTMLButtonElement>('button[type=submit]')?.disabled).toBe(false);
     expect(element.querySelectorAll('.route-card')).toHaveLength(2);
-    for (const card of element.querySelectorAll('.route-card')) {
-      expect(card.textContent).toContain('min');
-      expect(card.textContent).toContain('Acessibilidade:');
-      expect(card.textContent).toContain('Principais barreiras');
-    }
-    const accessiblePath = element.querySelector('.active-route')!.getAttribute('d');
-    for (const id of ['rapida', 'acessivel']) {
-      const radio = element.querySelector<HTMLInputElement>(`input[value="${id}"]`)!;
-      radio.click();
-      await harness.fixture.whenStable();
-      harness.detectChanges();
-      expect(radio.checked).toBe(true);
+    expect(element.querySelector('.accessibility-note')?.textContent).toContain('não determinada');
+    expect(element.querySelector('.score')?.textContent).toContain('não avaliada');
+  });
+
+  it('troca a seleção e o SVG usando as geometrias recebidas', async () => {
+    const { element, preencher, enviar, fixture } = await setup();
+    await preencher();
+    enviar();
+    http.expectOne(url).flush(resposta());
+    await fixture.whenStable();
+    const original = element.querySelector('.active-route')!.getAttribute('d');
+    for (const id of ['alternativa-1', 'rapida']) {
+      element.querySelector<HTMLInputElement>('input[value="' + id + '"]')!.click();
+      await fixture.whenStable();
       expect(element.querySelectorAll('.route-card.selected')).toHaveLength(1);
-      expect(element.querySelector('.route-card.selected input')).toBe(radio);
-      expect(element.querySelector('.active-route')!.getAttribute('data-route')).toBe(id);
-      expect(element.querySelector('[role="status"]')!.textContent).toContain(
-        id === 'rapida' ? 'Rota mais rápida selecionada' : 'Rota mais acessível selecionada',
-      );
-      const path = element.querySelector('.active-route')!.getAttribute('d');
-      if (id === 'rapida') expect(path).not.toBe(accessiblePath);
-      else expect(path).toBe(accessiblePath);
+      expect(element.querySelector('.active-route')?.getAttribute('data-route')).toBe(id);
+      if (id === 'rapida')
+        expect(element.querySelector('.active-route')?.getAttribute('d')).toBe(original);
+      else expect(element.querySelector('.active-route')?.getAttribute('d')).not.toBe(original);
     }
-    expect(element.querySelector('.map-caption')!.textContent).toContain('Praça');
-    expect(element.querySelector('.map-caption')!.textContent).toContain('Biblioteca');
   });
 
-  it('limpa resultados ao editar e permite uma nova consulta', async () => {
-    const { element, preencher, comparar } = await setup();
-    await preencher('Praça', 'Biblioteca');
-    await comparar();
-    await preencher('Terminal', 'Hospital');
-    expect(element.querySelector('.active-route')).toBeNull();
-    await comparar();
-    expect(element.querySelectorAll('.route-card')).toHaveLength(2);
-    expect(element.querySelector('.map-caption')!.textContent).toContain('Terminal');
+  it('não inventa uma segunda opção quando a API retorna apenas uma rota', async () => {
+    const { element, preencher, enviar, fixture } = await setup();
+    await preencher();
+    enviar();
+    http.expectOne(url).flush({ ...resposta(), alternativas: [] });
+    await fixture.whenStable();
+    expect(element.querySelectorAll('.route-card')).toHaveLength(1);
+    expect(element.querySelector('input[value=acessivel]')).toBeNull();
   });
 
-  it('informa ausência de trajeto quando os dois lugares são iguais', async () => {
-    const { element, preencher, comparar } = await setup();
-    await preencher(' Praça ', 'praça');
-    await comparar();
-    expect(element.querySelector('[role="status"]')!.textContent).toContain(
-      'origem e destino são iguais',
-    );
+  it('cancela consulta anterior ao editar e permite nova tentativa', async () => {
+    const { element, preencher, enviar, fixture } = await setup();
+    await preencher();
+    enviar();
+    const primeira = http.expectOne(url);
+    await preencher(['-23.50', '-47.45', '-23.52', '-47.46']);
+    expect(primeira.cancelled).toBe(true);
     expect(element.querySelector('.active-route')).toBeNull();
+    enviar();
+    http.expectOne(url).flush(resposta());
+    await fixture.whenStable();
+    expect(element.querySelector('.active-route')).toBeTruthy();
+    await preencher();
+    expect(element.querySelector('.active-route')).toBeNull();
+  });
+
+  for (const [status, texto] of [
+    [400, 'coordenadas'],
+    [404, 'Nenhuma rota'],
+    [502, 'inválida'],
+    [503, 'indisponível'],
+    [504, 'demorou'],
+  ] as const) {
+    it('trata HTTP ' + status + ' sem mostrar resultados fictícios', async () => {
+      const { element, preencher, enviar, fixture } = await setup();
+      await preencher();
+      enviar();
+      http.expectOne(url).flush({ detail: 'mensagem interna' }, { status, statusText: 'Error' });
+      await fixture.whenStable();
+      expect(element.textContent).toContain(texto);
+      expect(element.textContent).not.toContain('mensagem interna');
+      expect(element.querySelector('.active-route')).toBeNull();
+      expect(element.querySelector<HTMLButtonElement>('button[type=submit]')?.disabled).toBe(false);
+    });
+  }
+
+  it('trata backend desconectado', async () => {
+    const { element, preencher, enviar, fixture } = await setup();
+    await preencher();
+    enviar();
+    http.expectOne(url).error(new ProgressEvent('error'));
+    await fixture.whenStable();
+    expect(element.textContent).toContain('Não foi possível conectar');
+  });
+
+  it('rejeita contrato inválido e geometria ausente', async () => {
+    const { element, preencher, enviar, fixture } = await setup();
+    await preencher();
+    enviar();
+    http.expectOne(url).flush({ rota_rapida: {} });
+    await fixture.whenStable();
+    expect(element.textContent).toContain('não pôde ser interpretada');
+    expect(element.querySelector('.active-route')).toBeNull();
+  });
+
+  it('mostra candidata provisória sem transformar score null em zero', async () => {
+    const { element, preencher, enviar, fixture } = await setup();
+    const data = resposta();
+    data.rota_acessivel = data.alternativas[0];
+    data.alternativas = [];
+    await preencher();
+    enviar();
+    http.expectOne(url).flush(data);
+    await fixture.whenStable();
+    expect(element.textContent).toContain('Candidata com avaliação limitada');
+    expect(element.textContent).not.toContain('0/100');
+    expect(element.querySelectorAll('.accessible')).toHaveLength(0);
+  });
+
+  it('cancela requisição ao sair da tela', async () => {
+    const { preencher, enviar, fixture } = await setup();
+    await preencher();
+    enviar();
+    const request = http.expectOne(url);
+    fixture.destroy();
+    expect(request.cancelled).toBe(true);
   });
 });
