@@ -7,6 +7,10 @@ export interface Ponto {
   latitude: number;
   longitude: number;
 }
+export interface EnderecoEncontrado extends Ponto {
+  endereco: string;
+  aproximado?: boolean;
+}
 export interface RotaApi {
   tempo_minutos: number;
   distancia_metros: number;
@@ -61,6 +65,11 @@ function rotaValida(r: RotaApi): boolean {
 
 @Injectable({ providedIn: 'root' })
 export class RotasService {
+  enderecos(q: string) {
+    return this.http
+      .get<{ results: EnderecoEncontrado[] }>(this.base + '/rotas/enderecos/', { params: { q } })
+      .pipe(timeout(15000));
+  }
   private readonly http = inject(HttpClient);
   private readonly base = inject(API_BASE_URL);
   comparar(origem: Ponto, destino: Ponto) {

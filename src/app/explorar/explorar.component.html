@@ -1,0 +1,203 @@
+<main class="explore-page">
+  <h1 class="visually-hidden">Explorar locais em Sorocaba</h1>
+  <form class="explore-search" (ngSubmit)="buscar()">
+    <i class="bi bi-search" aria-hidden="true"></i
+    ><label class="visually-hidden" for="explore-search">Buscar local pelo nome</label
+    ><input
+      id="explore-search"
+      name="nome"
+      [(ngModel)]="nome"
+      placeholder="Buscar local pelo nome"
+    /><button type="submit">Buscar</button>
+  </form>
+  <div class="explore-layout">
+    <aside class="filters surface" aria-label="Filtros de locais">
+      <div class="filter-heading">
+        <h2>Filtros</h2>
+        <button (click)="limpar()">Limpar</button>
+      </div>
+      <fieldset>
+        <legend>Tipo de local</legend>
+        <label
+          ><input
+            type="radio"
+            name="categoria"
+            value=""
+            [(ngModel)]="categoria"
+            (change)="buscar()"
+          />Todos os tipos</label
+        >
+        @for (item of categorias(); track item) {
+          <label
+            ><input
+              type="radio"
+              name="categoria"
+              [value]="item"
+              [(ngModel)]="categoria"
+              (change)="buscar()"
+            />{{ item }}</label
+          >
+        }
+        @if (categoria && !categorias().includes(categoria)) {
+          <label
+            ><input type="radio" name="categoria" [value]="categoria" [(ngModel)]="categoria" />{{
+              categoria
+            }}</label
+          >
+        }
+      </fieldset>
+      <fieldset>
+        <legend>Necessidade</legend>
+        <label
+          ><input
+            type="radio"
+            name="necessidade"
+            value=""
+            [(ngModel)]="necessidade"
+            (change)="buscar()"
+          />Todas</label
+        >
+        @for (item of necessidades; track item.id) {
+          <label
+            ><input
+              type="radio"
+              name="necessidade"
+              [value]="item.id"
+              [(ngModel)]="necessidade"
+              (change)="buscar()"
+            />{{ item.nome }}</label
+          >
+        }
+      </fieldset>
+      <fieldset>
+        <legend>Recursos</legend>
+        @for (item of recursos | keyvalue; track item.key) {
+          <label
+            ><input
+              type="checkbox"
+              [checked]="escolhidos.includes(item.key)"
+              (change)="alternar(item.key)"
+            />{{ item.value }}</label
+          >
+        }
+      </fieldset>
+      <p class="filter-note"><i class="bi bi-geo-alt" aria-hidden="true"></i> Sorocaba, SP</p>
+    </aside>
+    <div class="explore-content">
+      <section class="map-shell" aria-label="Mapa dos locais desta página">
+        <div #mapa class="map-canvas"></div>
+        <div class="map-legend">
+          <strong>Acessibilidade</strong><span><i class="green"></i>Alta / boa</span
+          ><span><i class="amber"></i>Parcial</span><span><i class="red"></i>Baixa</span
+          ><span><i class="gray"></i>Não calculada</span>
+        </div>
+      </section>
+      <p class="map-note">
+        O mapa mostra os locais desta página com coordenadas cadastradas. Use + e − para ampliar.
+      </p>
+      <div class="results-heading">
+        <h2>Resultados</h2>
+        @if (pagina(); as p) {
+          <span>{{ p.count }} locais encontrados</span>
+        }
+      </div>
+      <section aria-live="polite" [attr.aria-busy]="carregando()">
+        @if (carregando()) {
+          <p class="empty-state" role="status">Buscando locais em Sorocaba…</p>
+        }
+        @if (erro()) {
+          <div class="empty-state" role="alert">
+            <p>{{ erro() }}</p>
+            <button class="secondary-btn" (click)="carregar()">Tentar novamente</button>
+          </div>
+        }
+        @if (!carregando() && !erro() && !pagina()?.count) {
+          <div class="empty-state">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <h3>Nenhum local encontrado</h3>
+            <p>Experimente outro nome ou ajuste os filtros.</p>
+            <button class="secondary-btn" (click)="limpar()">Limpar filtros</button>
+          </div>
+        }
+        <div class="results-grid">
+          @for (local of pagina()?.results; track local.id) {
+            <button class="result-card surface" (click)="abrir(local)">
+              <h3>{{ local.nome }}</h3>
+              <p>{{ local.categoria }} · {{ local.endereco }}</p>
+              <span class="score-badge" [attr.data-level]="local.acessibilidade.classificacao">{{
+                local.acessibilidade.nota === null
+                  ? 'Nota não calculada'
+                  : (local.acessibilidade.nota | number: '1.1-1') +
+                    '/100 · ' +
+                    local.acessibilidade.classificacao
+              }}</span>
+            </button>
+          }
+        </div>
+      </section>
+      @if (pagina(); as p) {
+        @if (p.next || p.previous) {
+          <nav class="pagination" aria-label="Paginação dos locais">
+            <button
+              class="secondary-btn"
+              [disabled]="!p.previous || carregando()"
+              (click)="mudar(-1)"
+            >
+              Anterior</button
+            ><span>Página {{ numero }}</span
+            ><button class="secondary-btn" [disabled]="!p.next || carregando()" (click)="mudar(1)">
+              Próxima
+            </button>
+          </nav>
+        }
+      }
+      @if (selecionado(); as local) {
+        <section id="explore-detail" tabindex="-1" class="detail surface">
+          <div class="results-heading">
+            <h2>{{ local.nome }}</h2>
+            <button
+              class="close-detail"
+              (click)="selecionado.set(null)"
+              aria-label="Fechar detalhes"
+            >
+              <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+          </div>
+          <p>{{ local.endereco }}</p>
+          <p>{{ local.descricao }}</p>
+          <span class="score-badge" [attr.data-level]="local.acessibilidade.classificacao">{{
+            local.acessibilidade.nota === null
+              ? 'Nota não calculada'
+              : (local.acessibilidade.nota | number: '1.1-1') +
+                '/100 · ' +
+                local.acessibilidade.classificacao
+          }}</span>
+          <ul class="resource-list">
+            @for (item of local.recursos | keyvalue; track item.key) {
+              @if (item.value === 'atendido') {
+                <li>
+                  <i class="bi bi-check-circle" aria-hidden="true"></i>{{ recursos[item.key] }}
+                </li>
+              }
+            }
+          </ul>
+          @for (foto of local.fotos; track foto.id) {
+            <figure>
+              <img [src]="foto.foto" [alt]="foto.legenda || local.nome" />
+              <figcaption>{{ foto.legenda }}</figcaption>
+            </figure>
+          }
+          @if (local.media_avaliacoes !== null) {
+            <p>
+              Avaliações dos usuários: {{ local.media_avaliacoes | number: '1.1-1' }}/5 ·
+              {{ local.total_avaliacoes }} avaliações
+            </p>
+          }
+          <a class="secondary-btn" routerLink="/reportar"
+            ><i class="bi bi-exclamation-triangle" aria-hidden="true"></i>Reportar problema</a
+          >
+        </section>
+      }
+    </div>
+  </div>
+</main>

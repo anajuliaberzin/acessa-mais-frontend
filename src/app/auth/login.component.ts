@@ -15,6 +15,7 @@ import { AuthService } from './auth.service';
         <a routerLink="/home" class="brand">Acessa+</a>
         <h1 id="login-title">Entre na sua conta</h1>
         <p>Você pode continuar explorando os locais sem entrar.</p>
+        @if (registered) { <p class="alert alert-success" role="status">Conta criada! Entre com seu usuário e senha.</p> }
         @if (expired) { <p role="status">Sua sessão expirou. Entre novamente.</p> }
         <form [formGroup]="form" (ngSubmit)="submit()" [attr.aria-busy]="loading()">
           <label for="username">Usuário</label>
@@ -27,12 +28,13 @@ import { AuthService } from './auth.service';
             {{ loading() ? 'Entrando…' : 'Entrar' }}
           </button>
         </form>
+        <p>Ainda não tem conta? <a routerLink="/cadastro" [queryParams]="{ returnUrl: returnUrl }">Criar conta</a></p>
         <a routerLink="/home">Continuar sem entrar</a>
       </section>
     </main>
   `,
   styles: [`
-    main { min-height: 100vh; display: grid; place-items: center; padding: 24px; color: #1a2340; }
+    main { min-height: calc(100vh - 73px); display: grid; place-items: center; padding: 24px; color: #1a2340; }
     section { width: 100%; max-width: 440px; padding: 32px; border-radius: 24px;
       background: white; box-shadow: 0 14px 40px #1b254012; }
     .brand { font-size: 1.4rem; font-weight: 800; text-decoration: none; }
@@ -40,8 +42,8 @@ import { AuthService } from './auth.service';
     p { line-height: 1.5; }
     form { display: grid; gap: 12px; margin: 24px 0; }
     label { font-weight: 600; }
-    input { width: 100%; padding: 12px; border: 1px solid #727c96; border-radius: 10px; }
-    button { padding: 14px; border: 0; border-radius: 12px; background: #4f5de1;
+    input { width: 100%; padding: 12px; border: 1px solid #d5daeb; border-radius: 99px; }
+    button { padding: 14px; border: 0; border-radius: 99px; background: #4e4be5;
       color: white; font-weight: 700; cursor: pointer; }
     button:disabled { opacity: .65; cursor: wait; }
     a { color: #404ec4; }
@@ -55,6 +57,8 @@ export class LoginComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   readonly expired = this.route.snapshot.queryParamMap.get('expired') === '1';
+  readonly registered = this.route.snapshot.queryParamMap.get('registered') === '1';
+  readonly returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
   readonly loading = signal(false);
   readonly error = signal('');
   readonly form = inject(FormBuilder).nonNullable.group({

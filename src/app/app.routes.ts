@@ -1,9 +1,25 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
+import { adminGuard } from './auth/admin.guard';
 
 export const routes: Routes = [
-  { path: 'painel', canActivate: [authGuard], loadComponent: () => import('./painel/painel.component').then(m => m.PainelComponent) },
-  { path: 'ocorrencias', canActivate: [authGuard], loadComponent: () => import('./ocorrencias/ocorrencias.component').then(m => m.OcorrenciasComponent) },
+  { path: 'cadastro', loadComponent: () => import('./auth/cadastro.component').then(m => m.CadastroComponent), title: 'Criar conta | ACESSA+' },
+  {
+    path: 'explorar',
+    loadComponent: () => import('./explorar/explorar.component').then((m) => m.ExplorarComponent),
+    title: 'Explorar Sorocaba | ACESSA+',
+  },
+  {
+    path: 'painel',
+    canActivate: [adminGuard],
+    loadComponent: () => import('./painel/painel.component').then((m) => m.PainelComponent),
+  },
+  {
+    path: 'ocorrencias',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./ocorrencias/ocorrencias.component').then((m) => m.OcorrenciasComponent),
+  },
   {
     path: 'rotas',
     loadComponent: () => import('./rotas/rotas.component').then((m) => m.RotasComponent),
@@ -33,6 +49,7 @@ export const routes: Routes = [
   },
   {
     path: 'perfil',
+    canActivate: [authGuard],
     loadComponent: () => import('./perfil/perfil.component').then((m) => m.PerfilComponent),
     title: 'Meu perfil | ACESSA+',
   },

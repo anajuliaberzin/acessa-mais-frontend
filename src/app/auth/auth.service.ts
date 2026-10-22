@@ -19,12 +19,17 @@ export class AuthService {
   private version = 0;
   readonly isAuthenticated = computed(() => this.tokens() !== null);
   readonly accessToken = computed(() => this.tokens()?.access ?? null);
+  readonly sessionId = signal(0);
+
+  register(dados: { nome: string; username: string; email: string; password: string; password_confirmation: string }) {
+    return this.http.post<{ id: number; username: string; email: string }>(this.baseUrl + '/auth/register/', dados);
+  }
 
   login(username: string, password: string) {
     const version = ++this.version;
     return this.http.post<Tokens>(this.baseUrl + '/auth/login/', { username, password }).pipe(
       tap((tokens) => {
-        if (version === this.version) this.tokens.set(tokens);
+        if (version === this.version) { this.tokens.set(tokens); this.sessionId.update(id => id + 1); }
       }),
     );
   }

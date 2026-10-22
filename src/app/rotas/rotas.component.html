@@ -1,11 +1,5 @@
 <main class="routes-page">
-  <a routerLink="/home" class="back-link"
-    ><i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar ao início</a
-  >
   <header class="page-heading">
-    <span class="eyebrow"
-      ><i class="bi bi-signpost-split" aria-hidden="true"></i> Planeje seu caminho</span
-    >
     <h1>Rotas acessíveis</h1>
     <p>Compare o tempo de percurso e as barreiras informadas para cada caminho.</p>
   </header>
@@ -16,41 +10,47 @@
     aria-label="Comparar rotas"
     aria-describedby="coordinates-note"
   >
-    @for (ponto of pontos; track ponto.id) {
+    @for (ponto of pontos; track ponto.id; let index = $index) {
       <fieldset>
         <legend class="h5">{{ ponto.nome }}</legend>
-        <label [for]="ponto.id + '-latitude'">Latitude da {{ ponto.nome.toLowerCase() }}</label>
+        <label [for]="ponto.id + '-endereco'">Endereço de {{ ponto.nome.toLowerCase() }}</label>
         <input
-          [id]="ponto.id + '-latitude'"
-          [name]="ponto.id + '-latitude'"
-          type="number"
-          step="any"
-          min="-90"
-          max="90"
-          required
-          [(ngModel)]="ponto.latitude"
-          (ngModelChange)="limparConsulta()"
-          placeholder="Ex.: -23.5015"
-          [attr.aria-invalid]="consultou() && invalido(ponto.latitude, 90)"
-          [attr.aria-describedby]="erro() ? 'form-error' : 'coordinates-note'"
+          [id]="ponto.id + '-endereco'"
+          [name]="ponto.id + '-endereco'"
+          type="text"
+          maxlength="250"
+          autocomplete="street-address"
+          [(ngModel)]="ponto.endereco"
+          (ngModelChange)="editarEndereco(index)"
+          (keydown.enter)="$event.preventDefault(); buscarEndereco(index)"
+          placeholder="Ex.: Rua da Penha, 400, Centro"
+          [attr.aria-describedby]="ponto.id + '-aviso'"
+          [attr.aria-invalid]="consultou() && ponto.latitude === null"
         />
-        <label [for]="ponto.id + '-longitude'" class="mt-3"
-          >Longitude da {{ ponto.nome.toLowerCase() }}</label
+        <button
+          class="address-search"
+          type="button"
+          [disabled]="ponto.buscando"
+          (click)="buscarEndereco(index)"
         >
-        <input
-          [id]="ponto.id + '-longitude'"
-          [name]="ponto.id + '-longitude'"
-          type="number"
-          step="any"
-          min="-180"
-          max="180"
-          required
-          [(ngModel)]="ponto.longitude"
-          (ngModelChange)="limparConsulta()"
-          placeholder="Ex.: -47.4526"
-          [attr.aria-invalid]="consultou() && invalido(ponto.longitude, 180)"
-          [attr.aria-describedby]="erro() ? 'form-error' : 'coordinates-note'"
-        />
+          <i class="bi bi-search" aria-hidden="true"></i>
+          {{ ponto.buscando ? 'Buscando…' : 'Buscar endereço' }}
+        </button>
+        <p class="address-hint" [id]="ponto.id + '-aviso'" role="status">{{ ponto.aviso }}</p>
+        @if (ponto.resultados.length) {
+          <ul
+            class="address-results"
+            [attr.aria-label]="'Endereços de ' + ponto.nome.toLowerCase()"
+          >
+            @for (item of ponto.resultados; track $index) {
+              <li>
+                <button type="button" (click)="selecionarEndereco(index, item)">
+                  <i class="bi bi-geo-alt" aria-hidden="true"></i>{{ item.endereco }}
+                </button>
+              </li>
+            }
+          </ul>
+        }
       </fieldset>
     }
     <button class="compare-btn" type="submit" [disabled]="carregando()">
@@ -61,7 +61,7 @@
     }
   </form>
   <p id="coordinates-note" class="demo-note">
-    Informe coordenadas de Sorocaba/SP. A busca por endereço ainda não está disponível.
+    Digite o endereço e escolha um resultado para cada ponto. A busca atende somente Sorocaba/SP.
   </p>
   <div class="comparison-layout">
     <section aria-labelledby="options-title">
@@ -152,7 +152,13 @@
           Geometria recebida do serviço de rotas, ajustada à tela, sem mapa de fundo. A e B indicam
           os extremos do trajeto.
         </desc>
-        <rect width="600" height="400" fill="#f5f6fa" />
+        <defs>
+          <pattern id="route-grid" width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#d7e2df" stroke-width="1.5" />
+          </pattern>
+        </defs>
+        <rect width="600" height="400" fill="#eef5ef" />
+        <rect width="600" height="400" style="fill: url(#route-grid)" />
         @if (projecao(); as desenho) {
           <path
             class="active-route"
@@ -177,12 +183,8 @@
       <div class="map-caption">
         @if (selecionada(); as ativa) {
           <p class="active-label">{{ ativa.nome }} ativa · {{ ativa.tempo_minutos }} min</p>
-          <p>
-            <strong>Origem solicitada:</strong> {{ pontos[0].latitude }}, {{ pontos[0].longitude }}
-          </p>
-          <p>
-            <strong>Destino solicitado:</strong> {{ pontos[1].latitude }}, {{ pontos[1].longitude }}
-          </p>
+          <p><strong>Origem solicitada:</strong> {{ pontos[0].endereco }}</p>
+          <p><strong>Destino solicitado:</strong> {{ pontos[1].endereco }}</p>
           <p>
             Traçado sem mapa de fundo. Os extremos podem ser ajustados pelo serviço à via mais
             próxima.

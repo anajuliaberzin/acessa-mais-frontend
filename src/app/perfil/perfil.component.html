@@ -1,137 +1,140 @@
-<div class="container perfil-container py-4 py-md-5">
-  <div class="col-12 col-md-9 col-lg-7 mx-auto">
-
-    <!-- Cabeçalho do perfil -->
+<main class="container perfil-container py-4 py-md-5">
+  @if (carregandoPerfil()) {
+    <p role="status">Carregando seu perfil…</p>
+  }
+  @if (erroPerfil()) {
+    <div class="empty-state" role="alert">
+      <p>{{ erroPerfil() }}</p>
+      <button class="secondary-btn" (click)="carregarPerfil()">Tentar novamente</button>
+    </div>
+  }
+  @if (usuario(); as u) {
     <header class="perfil-header d-flex align-items-center gap-3 mb-4">
       <div class="avatar" aria-hidden="true">{{ iniciais() }}</div>
       <div>
-        <h1 class="h4 fw-bold mb-1">{{ usuario().nome }}</h1>
-        <p class="text-body-secondary mb-0">
-          <i class="bi bi-geo-alt" aria-hidden="true"></i>
-          {{ usuario().cidade }}, {{ usuario().uf }}
-          <span class="mx-1">·</span>
-          Membro desde {{ membroDesdeFormatado() }}
+        <h1>{{ u.nome }}</h1>
+        <p class="mb-0">
+          {{ u.cidade }}, {{ u.uf }} · Membro desde {{ u.membroDesde | date: 'MM/yyyy' }}
         </p>
       </div>
     </header>
-
-    <!-- Preferências de acessibilidade -->
-    <section class="mb-4" aria-labelledby="tituloPreferencias">
-      <h2 id="tituloPreferencias" class="h6 fw-bold text-uppercase text-body-secondary mb-3">
-        Preferências de acessibilidade
-      </h2>
-      <div class="d-flex flex-wrap gap-2" role="group" aria-label="Preferências de acessibilidade do usuário">
-        <button
-          type="button"
-          *ngFor="let pref of preferenciasDisponiveis"
-          class="badge-preferencia"
-          [class.ativa]="estaSelecionada(pref.valor)"
-          [attr.aria-pressed]="estaSelecionada(pref.valor)"
-          (click)="alternarPreferencia(pref.valor)"
-        >
-          <i class="bi {{ pref.icone }}" aria-hidden="true"></i>
-          {{ pref.rotulo }}
-        </button>
+    <section class="preferences-panel mb-4" aria-labelledby="preferencias-titulo">
+      <h2 id="preferencias-titulo" class="h6 fw-bold">Preferências de acessibilidade</h2>
+      <p class="preference-help">Mantenha suas necessidades de acessibilidade atualizadas.</p>
+      <div class="preferences-grid">
+        @for (pref of preferenciasDisponiveis; track pref.valor) {
+          <button
+            class="badge-preferencia"
+            type="button"
+            [class.ativa]="u.preferencias.includes(pref.valor)"
+            [attr.aria-pressed]="u.preferencias.includes(pref.valor)"
+            [disabled]="salvando()"
+            (click)="alternarPreferencia(pref.valor)"
+          >
+            <i [class]="'bi ' + pref.icone" aria-hidden="true"></i>{{ pref.rotulo }}
+          </button>
+        }
       </div>
+      <p role="status" class="small mt-3 mb-0">
+        {{ salvando() ? 'Salvando preferências…' : mensagem() }}
+      </p>
     </section>
-
-    <!-- Abas -->
-    <nav class="mb-3">
-      <ul class="nav nav-tabs perfil-tabs" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button
-            class="nav-link"
-            [class.active]="abaAtiva() === 'avaliacoes'"
-            type="button"
-            role="tab"
-            [attr.aria-selected]="abaAtiva() === 'avaliacoes'"
-            (click)="selecionarAba('avaliacoes')"
-          >
-            Minhas avaliações
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button
-            class="nav-link"
-            [class.active]="abaAtiva() === 'ocorrencias'"
-            type="button"
-            role="tab"
-            [attr.aria-selected]="abaAtiva() === 'ocorrencias'"
-            (click)="selecionarAba('ocorrencias')"
-          >
-            Minhas ocorrências
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button
-            class="nav-link"
-            [class.active]="abaAtiva() === 'favoritos'"
-            type="button"
-            role="tab"
-            [attr.aria-selected]="abaAtiva() === 'favoritos'"
-            (click)="selecionarAba('favoritos')"
-          >
-            Locais favoritos
-          </button>
-        </li>
-      </ul>
-    </nav>
-
-    <!-- Conteúdo: Minhas avaliações -->
-    <div *ngIf="abaAtiva() === 'avaliacoes'" role="tabpanel">
-      <div class="card-local mb-3" *ngFor="let avaliacao of avaliacoes()">
-        <div class="d-flex justify-content-between align-items-start">
-          <h3 class="h6 fw-bold mb-1">{{ avaliacao.nomeLocal }}</h3>
-          <span class="estrelas" [attr.aria-label]="avaliacao.nota + ' de 5 estrelas'">
-            <i
-              *ngFor="let preenchida of estrelas(avaliacao.nota)"
-              class="bi"
-              [class.bi-star-fill]="preenchida"
-              [class.bi-star]="!preenchida"
-              aria-hidden="true"
-            ></i>
-          </span>
-        </div>
-        <p class="text-body-secondary small mb-1">{{ avaliacao.comentario }}</p>
-        <p class="text-body-tertiary small mb-0">{{ avaliacao.data | date: 'dd/MM/yyyy' }}</p>
+  }
+  <nav class="perfil-tabs mb-3" aria-label="Contribuições do perfil">
+    <button
+      class="nav-link"
+      [class.active]="abaAtiva() === 'avaliacoes'"
+      [attr.aria-pressed]="abaAtiva() === 'avaliacoes'"
+      (click)="selecionarAba('avaliacoes')"
+    >
+      Minhas avaliações</button
+    ><button
+      class="nav-link"
+      [class.active]="abaAtiva() === 'ocorrencias'"
+      [attr.aria-pressed]="abaAtiva() === 'ocorrencias'"
+      (click)="selecionarAba('ocorrencias')"
+    >
+      Minhas ocorrências</button
+    ><button
+      class="nav-link"
+      [class.active]="abaAtiva() === 'favoritos'"
+      [attr.aria-pressed]="abaAtiva() === 'favoritos'"
+      (click)="selecionarAba('favoritos')"
+    >
+      Locais favoritos
+    </button>
+  </nav>
+  <section aria-live="polite" [attr.aria-busy]="carregando()">
+    @if (carregando()) {
+      <p class="empty-state" role="status">Carregando…</p>
+    }
+    @if (erro()) {
+      <div class="empty-state" role="alert">
+        <p>{{ erro() }}</p>
+        <button class="secondary-btn" (click)="carregar()">Tentar novamente</button>
       </div>
-      <p *ngIf="avaliacoes().length === 0" class="text-body-secondary">Você ainda não avaliou nenhum local.</p>
-    </div>
-
-    <!-- Conteúdo: Minhas ocorrências -->
-    <div *ngIf="abaAtiva() === 'ocorrencias'" role="tabpanel">
-      <div class="card-local mb-3" *ngFor="let ocorrencia of ocorrencias()">
-        <div class="d-flex justify-content-between align-items-start gap-2">
-          <h3 class="h6 fw-bold mb-1">{{ ocorrencia.descricaoResumo }}</h3>
-          <span class="badge rounded-pill" [ngClass]="classeStatus(ocorrencia.status)">
-            {{ rotuloStatus(ocorrencia.status) }}
-          </span>
-        </div>
-        <p class="text-body-secondary small mb-1">{{ ocorrencia.tipoProblema }}</p>
-        <p class="text-body-tertiary small mb-0">Reportado em {{ ocorrencia.data | date: 'dd/MM/yyyy' }}</p>
-      </div>
-      <p *ngIf="ocorrencias().length === 0" class="text-body-secondary">Você ainda não reportou nenhum problema.</p>
-    </div>
-
-    <!-- Conteúdo: Locais favoritos -->
-    <div *ngIf="abaAtiva() === 'favoritos'" role="tabpanel">
-      <div class="card-local mb-3" *ngFor="let favorito of favoritos()">
-        <div class="d-flex justify-content-between align-items-start">
-          <h3 class="h6 fw-bold mb-1">{{ favorito.nomeLocal }}</h3>
-          <span class="estrelas" [attr.aria-label]="favorito.nota + ' de 5 estrelas'">
-            <i
-              *ngFor="let preenchida of estrelas(favorito.nota)"
-              class="bi"
-              [class.bi-star-fill]="preenchida"
-              [class.bi-star]="!preenchida"
-              aria-hidden="true"
-            ></i>
-          </span>
-        </div>
-        <p class="text-body-secondary small mb-0">{{ favorito.comentario }}</p>
-      </div>
-      <p *ngIf="favoritos().length === 0" class="text-body-secondary">Você ainda não favoritou nenhum local.</p>
-    </div>
-
-  </div>
-</div>
+    }
+    @if (!carregando() && !erro()) {
+      @if (abaAtiva() === 'avaliacoes') {
+        @for (a of avaliacoes(); track a.id) {
+          <article class="card-local mb-3">
+            <div class="d-flex justify-content-between gap-2">
+              <h3>{{ a.nomeLocal }}</h3>
+              <span class="estrelas"
+                ><i class="bi bi-star-fill" aria-hidden="true"></i> {{ a.nota }}/5 ·
+                {{ a.created_at | date: 'dd/MM/yyyy' }}</span
+              >
+            </div>
+            <p class="small mb-0">{{ a.comentario }}</p>
+          </article>
+        } @empty {
+          <p class="empty-state">Você ainda não avaliou nenhum local.</p>
+        }
+      }
+      @if (abaAtiva() === 'ocorrencias') {
+        @for (o of ocorrencias(); track o.id) {
+          <article class="card-local mb-3">
+            <div class="d-flex justify-content-between gap-2">
+              <h3>{{ o.protocolo }}</h3>
+              <span class="score-badge">{{ status(o.status) }}</span>
+            </div>
+            <p>{{ o.descricao }}</p>
+            <p class="small mb-0">{{ o.endereco }} · {{ o.dataCriacao | date: 'dd/MM/yyyy' }}</p>
+          </article>
+        } @empty {
+          <p class="empty-state">Você ainda não reportou nenhum problema.</p>
+        }
+        <a class="secondary-btn" routerLink="/ocorrencias">Acompanhar protocolos e histórico</a>
+      }
+      @if (abaAtiva() === 'favoritos') {
+        @for (f of favoritos(); track f.id) {
+          <article class="card-local mb-3">
+            <h3>{{ f.nome }}</h3>
+            <p class="small">{{ f.endereco }}</p>
+            <span class="score-badge" [attr.data-level]="f.acessibilidade.classificacao">{{
+              f.acessibilidade.nota === null
+                ? 'Nota não calculada'
+                : (f.acessibilidade.nota | number: '1.1-1') +
+                  '/100 · ' +
+                  f.acessibilidade.classificacao
+            }}</span>
+          </article>
+        } @empty {
+          <p class="empty-state">Você ainda não favoritou nenhum local.</p>
+        }
+      }
+    }
+  </section>
+  @if (paginacao(); as p) {
+    @if (p.next || p.previous) {
+      <nav class="d-flex gap-3 align-items-center mt-4" aria-label="Paginação das contribuições">
+        <button class="secondary-btn" [disabled]="!p.previous || carregando()" (click)="mudar(-1)">
+          Anterior</button
+        ><span>Página {{ numero }}</span
+        ><button class="secondary-btn" [disabled]="!p.next || carregando()" (click)="mudar(1)">
+          Próxima
+        </button>
+      </nav>
+    }
+  }
+</main>
