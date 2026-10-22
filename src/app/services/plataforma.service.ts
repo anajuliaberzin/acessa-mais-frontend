@@ -15,6 +15,14 @@ export interface Registro {
   status: string; dataCriacao: string; fotoUrl: string | null;
   historico: { id: number; status: string; justificativa: string; created_at: string }[];
 }
+export interface Indicadores {
+  total_ocorrencias: number; total_locais: number; locais_com_nota: number; locais_sem_nota: number;
+  media_acessibilidade: number | null;
+  por_status: { status: string; total: number }[];
+  por_tipo: { tipo_problema: string; total: number }[];
+  evolucao: { dia: string; total: number }[];
+  por_acessibilidade: { classificacao: string; total: number }[];
+}
 export const RECURSOS: Record<string, string> = {
   rampa: 'Rampa ou acesso sem degrau', banheiro_adaptado: 'Banheiro adaptado',
   vaga_acessivel: 'Vaga acessível', elevador: 'Elevador', piso_tatil: 'Piso tátil', recurso_auditivo: 'Recurso auditivo',
@@ -38,11 +46,17 @@ export class PlataformaService {
   }
   filtros() { return this.http.get<{ categorias: string[] }>(this.base + '/locais/filtros/'); }
   local(id: number) { return this.http.get<Local>(`${this.base}/locais/${id}/`); }
-  ocorrencias(_gestao = false, filtros: Record<string, string | number> = {}) {
-    return this.http.get<Pagina<Registro>>(this.base + '' + '/ocorrencias/', { context: this.contexto(), params: this.params(filtros) });
+  ocorrencias(gestao = false, filtros: Record<string, string | number> = {}) {
+    return this.http.get<Pagina<Registro>>(this.base + (gestao ? '/gestao' : '') + '/ocorrencias/', { context: this.contexto(), params: this.params(filtros) });
   }
-  ocorrencia(id: number) {
-    return this.http.get<Registro>(`${this.base}/ocorrencias/${id}/`, { context: this.contexto() });
+  ocorrencia(id: number, gestao = false) {
+    return this.http.get<Registro>(`${this.base}${gestao ? '/gestao' : ''}/ocorrencias/${id}/`, { context: this.contexto() });
+  }
+  indicadores(filtros: Record<string, string | number>) {
+    return this.http.get<Indicadores>(this.base + '/gestao/indicadores/', { context: this.contexto(), params: this.params(filtros) });
+  }
+  alterarStatus(id: number, status: string, justificativa: string) {
+    return this.http.patch<Registro>(`${this.base}/gestao/ocorrencias/${id}/`, { status, justificativa }, { context: this.contexto() });
   }
   foto(id: number) {
     return this.http.get(`${this.base}/ocorrencias/${id}/foto/`, { context: this.contexto(), responseType: 'blob' });

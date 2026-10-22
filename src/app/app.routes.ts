@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
+  { path: 'painel', canActivate: [authGuard], loadComponent: () => import('./painel/painel.component').then(m => m.PainelComponent) },
   { path: 'ocorrencias', canActivate: [authGuard], loadComponent: () => import('./ocorrencias/ocorrencias.component').then(m => m.OcorrenciasComponent) },
   {
     path: 'rotas',
