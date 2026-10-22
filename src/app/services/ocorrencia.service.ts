@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { REQUIRE_AUTH } from '../auth/auth.interceptor';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../auth/api.config';
 import { NovaOcorrencia, Ocorrencia } from '../models/ocorrencia.model';
@@ -10,9 +11,7 @@ import { NovaOcorrencia, Ocorrencia } from '../models/ocorrencia.model';
  * (reverse geocoding via Nominatim/OpenStreetMap).
  *
  * Usa o mesmo API_BASE_URL configurado em `auth/api.config.ts` (o mesmo
- * backend usado pelo login). O endpoint POST /ocorrencias/ ainda precisa
- * ser implementado no backend; este serviço já está pronto para consumi-lo
- * assim que existir.
+ * backend usado pelo login). POST /ocorrencias/ exige JWT e recebe multipart.
  */
 @Injectable({ providedIn: 'root' })
 export class OcorrenciaService {
@@ -22,19 +21,22 @@ export class OcorrenciaService {
 
   enviarOcorrencia(novaOcorrencia: NovaOcorrencia): Observable<Ocorrencia> {
     const formData = new FormData();
+    formData.append('confirmadoSorocaba', String(novaOcorrencia.confirmadoSorocaba));
     formData.append('endereco', novaOcorrencia.endereco);
     formData.append('tipoProblema', novaOcorrencia.tipoProblema);
     formData.append('descricao', novaOcorrencia.descricao);
     if (novaOcorrencia.latitude != null) {
-      formData.append('latitude', String(novaOcorrencia.latitude));
+      formData.append('latitude', novaOcorrencia.latitude.toFixed(6));
     }
     if (novaOcorrencia.longitude != null) {
-      formData.append('longitude', String(novaOcorrencia.longitude));
+      formData.append('longitude', novaOcorrencia.longitude.toFixed(6));
     }
     if (novaOcorrencia.foto) {
       formData.append('foto', novaOcorrencia.foto);
     }
-    return this.http.post<Ocorrencia>(this.baseUrl + '/ocorrencias/', formData);
+    return this.http.post<Ocorrencia>(this.baseUrl + '/ocorrencias/', formData, {
+      context: new HttpContext().set(REQUIRE_AUTH, true),
+    });
   }
 
   /** Retorna um endereço legível a partir de latitude/longitude (OpenStreetMap Nominatim). */

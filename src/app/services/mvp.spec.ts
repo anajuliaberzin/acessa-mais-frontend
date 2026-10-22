@@ -23,6 +23,12 @@ describe('Fluxos do MVP', () => {
     backend.expectOne(base + '/auth/login/').flush({ access: 'jwt-teste', refresh: 'refresh-teste' });
   }
 
+  it('redireciona reporte anônimo ao login preservando o destino', async () => {
+    const router = TestBed.inject(Router);
+    await router.navigateByUrl('/reportar');
+    expect(router.url).toBe('/login?returnUrl=%2Freportar');
+  });
+
   it('consulta locais sem credenciais mesmo com usuário autenticado', () => {
     login();
     TestBed.inject(PlataformaService).locais({ nome: 'Biblioteca', recursos: 'rampa' }).subscribe();
@@ -31,6 +37,38 @@ describe('Fluxos do MVP', () => {
     expect(req.request.params.get('recursos')).toBe('rampa');
     expect(req.request.headers.has('Authorization')).toBe(false);
     req.flush({ count: 0, results: [], next: null, previous: null });
+  });
+
+  it('envia reporte multipart com JWT e confirmação de Sorocaba', () => {
+    login();
+    TestBed.inject(OcorrenciaService).enviarOcorrencia({ endereco: 'Rua em Sorocaba', descricao: 'Calçada bloqueada por um obstáculo', tipoProblema: 'obstaculo_na_via', latitude: -23.5012345678, longitude: -47.4567891234, confirmadoSorocaba: true }).subscribe();
+    const req = backend.expectOne(base + '/ocorrencias/');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer jwt-teste');
+    expect(req.request.body.get('confirmadoSorocaba')).toBe('true');
+    expect(req.request.body.get('tipoProblema')).toBe('obstaculo_na_via');
+    expect(req.request.body.get('latitude')).toBe('-23.501235');
+    expect(req.request.body.get('longitude')).toBe('-47.456789');
+    req.flush({ id: 1, protocolo: 'AC-TESTE' });
+  });
+
+  it('exibe protocolo e impede envio duplicado do formulário', () => {
+    login();
+    const fixture = TestBed.createComponent(ReportarProblemaComponent);
+    const component = fixture.componentInstance;
+    component.form.patchValue({ endereco: 'Rua em Sorocaba', descricao: 'Calçada bloqueada por um obstáculo', tipoProblema: 'obstaculo_na_via', confirmadoSorocaba: true });
+    component.enviar(); component.enviar();
+    backend.expectOne(base + '/ocorrencias/').flush({ id: 1, protocolo: 'AC-TESTE' });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('AC-TESTE');
+    expect(component.estado()).toBe('sucesso');
+  });
+
+  it('não exige JWT no geocodificador externo', () => {
+    login();
+    TestBed.inject(OcorrenciaService).obterEnderecoPorCoordenadas(-23.5, -47.4).subscribe();
+    const req = backend.expectOne(r => r.url.startsWith('https://nominatim.openstreetmap.org/'));
+    expect(req.request.headers.has('Authorization')).toBe(false);
+    req.flush({ display_name: 'Sorocaba' });
   });
 
   it('mostra estado vazio e ignora resposta antiga na busca', () => {

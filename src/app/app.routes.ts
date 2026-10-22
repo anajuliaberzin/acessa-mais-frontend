@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
+  { path: 'ocorrencias', canActivate: [authGuard], loadComponent: () => import('./ocorrencias/ocorrencias.component').then(m => m.OcorrenciasComponent) },
   {
     path: 'rotas',
     loadComponent: () => import('./rotas/rotas.component').then((m) => m.RotasComponent),
@@ -21,6 +23,7 @@ export const routes: Routes = [
   },
   {
     path: 'reportar',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./reportar-problema/reportar-problema.component').then(
         (m) => m.ReportarProblemaComponent,
