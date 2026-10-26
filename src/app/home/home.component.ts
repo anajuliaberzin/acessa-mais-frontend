@@ -2,12 +2,13 @@ import { Component, inject, signal, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { HomeFooterComponent } from './home-footer.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../auth/auth.service';
 import { PlataformaService, Local, Pagina, RECURSOS } from '../services/plataforma.service';
 
 @Component({
-  selector: 'app-home', standalone: true, imports: [RouterLink, CommonModule, FormsModule],
+  selector: 'app-home', standalone: true, imports: [RouterLink, CommonModule, FormsModule, HomeFooterComponent],
   templateUrl: './home.component.html', styleUrl: './home.component.css',
 })
 export class HomeComponent {

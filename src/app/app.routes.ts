@@ -3,6 +3,7 @@ import { authGuard } from './auth/auth.guard';
 import { adminGuard } from './auth/admin.guard';
 
 export const routes: Routes = [
+  { path: 'sobre', loadComponent: () => import('./sobre/sobre.component').then(m => m.SobreComponent), title: 'Quem somos nós | ACESSA+' },
   { path: 'cadastro', loadComponent: () => import('./auth/cadastro.component').then(m => m.CadastroComponent), title: 'Criar conta | ACESSA+' },
   {
     path: 'explorar',
