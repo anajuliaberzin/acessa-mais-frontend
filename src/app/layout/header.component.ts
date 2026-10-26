@@ -7,14 +7,14 @@ import { SessaoService } from '../auth/sessao.service';
   selector: 'app-header',
   imports: [RouterLink, RouterLinkActive],
   template: ` <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
-    <header class="site-header">
+    <header class="site-header" (keydown.escape)="closeMenu($event, menuToggle)">
       <div class="header-inner">
         <a class="brand" routerLink="/home" (click)="open.set(false)" aria-label="Acessa+, início"
           ><span class="brand-mark"><i class="bi bi-universal-access" aria-hidden="true"></i></span
           ><span>Acessa<span class="brand-plus">+</span></span></a
         >
         <button
-          class="menu-toggle"
+          class="menu-toggle" #menuToggle
           type="button"
           (click)="open.set(!open())"
           [attr.aria-expanded]="open()"
@@ -56,6 +56,7 @@ export class HeaderComponent {
   readonly auth = inject(AuthService);
   readonly sessao = inject(SessaoService);
   readonly open = signal(false);
+  closeMenu(event: Event, trigger: HTMLButtonElement) { if(this.open()){event.preventDefault();this.open.set(false);trigger.focus();} }
   readonly links = [
     { path: '/home', label: 'Início', icon: 'house-door' },
     { path: '/explorar', label: 'Explorar', icon: 'map' },

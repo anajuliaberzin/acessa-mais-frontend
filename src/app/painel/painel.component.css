@@ -1,8 +1,8 @@
 .dashboard h1 {
-  font-size: 28px;
+  font-size: 1.75rem;
 }
 .dashboard > p {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .dashboard > .card {
   border-radius: 24px;
@@ -11,23 +11,23 @@
   padding: 24px !important;
 }
 .dashboard form h2 {
-  font-size: 15px;
+  font-size: 0.9375rem;
   margin-bottom: 18px;
 }
 .dashboard form label {
-  font-size: 12px;
+  font-size: 0.75rem;
   display: grid;
   gap: 7px;
 }
 .dashboard form .form-control,
 .dashboard form .form-select {
-  font-size: 12px;
+  font-size: 0.75rem;
   min-height: 42px;
 }
 .dashboard form > .btn {
   align-self: start;
   max-width: max-content;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .dashboard .row.g-3.mb-4 .card {
   min-height: 128px;
@@ -38,11 +38,11 @@
   gap: 6px;
 }
 .dashboard .row.g-3.mb-4 .card span {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .dashboard .row.g-3.mb-4 strong {
-  font-size: 30px !important;
+  font-size: 1.875rem !important;
   font-weight: 800;
   color: var(--ink);
   letter-spacing: -0.04em;
@@ -64,7 +64,7 @@
   min-height: 250px;
 }
 .charts-grid h2 {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 22px;
@@ -75,7 +75,7 @@
   margin: 14px 0;
 }
 .grafico span {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
 }
 meter {
@@ -113,7 +113,7 @@ meter::-moz-meter-bar {
   box-shadow: var(--shadow);
 }
 .table {
-  font-size: 12px;
+  font-size: 0.75rem;
   margin: 0;
 }
 .table > :not(caption) > * > * {
@@ -122,18 +122,18 @@ meter::-moz-meter-bar {
 }
 .table th {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .table button {
   border-radius: 99px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   border-color: #d5d9ed;
   color: var(--primary);
 }
 nav {
   margin-top: 20px;
   align-items: center;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 nav button {
   border: 1px solid var(--line);
@@ -156,7 +156,7 @@ nav button {
     min-height: 115px;
   }
   .dashboard .row.g-3.mb-4 strong {
-    font-size: 24px !important;
+    font-size: 1.5rem !important;
   }
 }
 
@@ -169,7 +169,7 @@ nav button {
   gap: 10px;
   align-items: center;
   margin: 12px 0;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .horizontal-row > span {
   line-height: 1.4;
@@ -210,10 +210,10 @@ nav button {
   flex: 1;
   max-width: 52px;
   text-align: center;
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .vertical-column strong {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
 }
 .vertical-track {
@@ -240,12 +240,12 @@ nav button {
   height: 190px;
 }
 .donut-total {
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: 800;
   fill: var(--ink);
 }
 .donut-label {
-  font-size: 7px;
+  font-size: 0.4375rem;
   fill: var(--muted);
 }
 .chart-legend {
@@ -253,7 +253,7 @@ nav button {
   flex-wrap: wrap;
   gap: 7px 14px;
   justify-content: center;
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .chart-legend i {
   display: inline-block;
@@ -266,22 +266,22 @@ nav button {
   margin-left: 4px;
 }
 .chart-footnote {
-  font-size: 11px;
+  font-size: 0.6875rem;
   margin: 16px 0 0;
 }
 .chart-empty {
   align-self: center;
-  font-size: 13px;
+  font-size: 0.8125rem;
   margin: 28px 0;
   color: var(--muted);
 }
 .donut-empty {
   text-align: center;
   padding: 25px 10px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .donut-empty i {
-  font-size: 48px;
+  font-size: 3rem;
   color: #c3c8de;
 }
 .rank-row {
@@ -297,7 +297,7 @@ nav button {
   height: 24px;
   border-radius: 50%;
   background: var(--soft);
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .rank-row > div {
   flex: 1;
@@ -305,6 +305,6 @@ nav button {
 .rank-label {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 0.75rem;
   margin-bottom: 6px;
 }

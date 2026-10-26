@@ -64,7 +64,7 @@
       Locais favoritos
     </button>
   </nav>
-  <section aria-live="polite" [attr.aria-busy]="carregando()">
+  <section  [attr.aria-busy]="carregando()">
     @if (carregando()) {
       <p class="empty-state" role="status">Carregando…</p>
     }

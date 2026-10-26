@@ -28,7 +28,7 @@ import { AuthService } from './auth.service';
     </main>`,
   styles: [`
     .signup-page{min-height:calc(100vh - 73px);padding:40px 20px 64px;background:radial-gradient(ellipse at 20% 0,#eeecfb,transparent 60%);display:flex;justify-content:center;align-items:start}
-    section{width:100%;max-width:520px;padding:32px}.signup-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:var(--soft);color:var(--primary);font-size:24px;margin-bottom:20px}h1{font-size:28px;margin-bottom:12px}section>p{font-size:13px}form{display:grid;gap:18px;margin:24px 0}label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}.help{font-size:11px;margin:6px 0 0}small{display:block;color:#a21b2d;font-size:12px;margin-top:5px}.form-control[aria-invalid=true]{border-color:#b32632}.alert{font-size:12px;margin:0}.signin-link{text-align:center;margin:0 0 14px}.signin-link a{font-weight:700}.explore-link{display:block;text-align:center;font-size:12px;color:var(--muted)}@media(max-width:600px){.signup-page{padding:24px 16px}section{padding:24px}}
+    section{width:100%;max-width:520px;padding:32px}.signup-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:var(--soft);color:var(--primary);font-size: 1.5rem;margin-bottom:20px}h1{font-size: 1.75rem;margin-bottom:12px}section>p{font-size: 0.8125rem}form{display:grid;gap:18px;margin:24px 0}label{display:block;font-size: 0.8125rem;font-weight:600;margin-bottom:7px}.help{font-size: 0.6875rem;margin:6px 0 0}small{display:block;color:#a21b2d;font-size: 0.75rem;margin-top:5px}.form-control[aria-invalid=true]{border-color:#b32632}.alert{font-size: 0.75rem;margin:0}.signin-link{text-align:center;margin:0 0 14px}.signin-link a{font-weight:700}.explore-link{display:block;text-align:center;font-size: 0.75rem;color:var(--muted)}@media(max-width:600px){.signup-page{padding:24px 16px}section{padding:24px}}
   `],
 })
 export class CadastroComponent {
@@ -50,7 +50,7 @@ export class CadastroComponent {
   submit() {
     if (this.loading()) return;
     this.error.set(''); this.form.markAllAsTouched();
-    if (this.form.invalid || this.mismatch()) return;
+    if (this.form.invalid || this.mismatch()) { setTimeout(() => (document.querySelector<HTMLElement>('[formControlName].ng-invalid') ?? document.getElementById('signup-confirm'))?.focus()); return; }
     this.loading.set(true);
     this.auth.register(this.form.getRawValue()).pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.loading.set(false))).subscribe({
       next: () => { this.form.reset(); void this.router.navigate(['/login'], {queryParams:{registered:'1', returnUrl:this.returnUrl}}); },

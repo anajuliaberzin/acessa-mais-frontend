@@ -52,20 +52,20 @@
 }
 .filter-heading h2,
 .results-heading h2 {
-  font-size: 18px;
+  font-size: 1.125rem;
   margin: 0;
 }
 .filter-heading button {
   border: 0;
   background: transparent;
   color: var(--primary);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 fieldset {
   margin-bottom: 26px;
 }
 legend {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
   margin-bottom: 10px;
 }
@@ -73,7 +73,7 @@ fieldset label {
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 12px;
+  font-size: 0.75rem;
   padding: 5px 0;
   text-transform: capitalize;
   cursor: pointer;
@@ -82,7 +82,7 @@ fieldset label {
   border-top: 1px solid var(--line);
   padding-top: 18px;
   margin: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .map-shell {
   position: relative;
@@ -104,7 +104,7 @@ fieldset label {
   border: 1px solid var(--line);
   border-radius: 16px;
   box-shadow: var(--shadow);
-  font-size: 10px;
+  font-size: 0.625rem;
   pointer-events: none;
 }
 .map-legend strong,
@@ -131,7 +131,7 @@ fieldset label {
   background: #747e95;
 }
 .map-note {
-  font-size: 11px;
+  font-size: 0.6875rem;
   margin: 10px 0 24px;
 }
 .results-heading {
@@ -142,7 +142,7 @@ fieldset label {
   margin-bottom: 16px;
 }
 .results-heading > span {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .results-grid {
@@ -162,11 +162,11 @@ fieldset label {
   box-shadow: 0 6px 24px #4e4be512;
 }
 .result-card h3 {
-  font-size: 15px;
+  font-size: 0.9375rem;
   margin-bottom: 6px;
 }
 .result-card p {
-  font-size: 12px;
+  font-size: 0.75rem;
   text-transform: capitalize;
   margin-bottom: 10px;
 }
@@ -201,7 +201,7 @@ fieldset label {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .resource-list i {
   margin-right: 6px;

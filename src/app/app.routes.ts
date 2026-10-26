@@ -11,11 +11,13 @@ export const routes: Routes = [
   },
   {
     path: 'painel',
+    title: 'Painel do município | ACESSA+',
     canActivate: [adminGuard],
     loadComponent: () => import('./painel/painel.component').then((m) => m.PainelComponent),
   },
   {
     path: 'ocorrencias',
+    title: 'Minhas ocorrências | ACESSA+',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./ocorrencias/ocorrencias.component').then((m) => m.OcorrenciasComponent),
@@ -27,6 +29,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
+    title: 'Entrar | ACESSA+',
     loadComponent: () => import('./auth/login.component').then((module) => module.LoginComponent),
   },
   {
@@ -36,6 +39,7 @@ export const routes: Routes = [
   },
   {
     path: 'home',
+    title: 'Início | ACESSA+',
     loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
   },
   {

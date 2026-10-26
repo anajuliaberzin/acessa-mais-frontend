@@ -16,14 +16,14 @@
   place-items: center;
   background: linear-gradient(135deg, #7948d5, #347fc8);
   color: white;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 700;
 }
 .perfil-header h1 {
-  font-size: 28px;
+  font-size: 1.75rem;
 }
 .perfil-header p {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .preferences-panel {
   padding: 24px;
@@ -33,7 +33,7 @@
   box-shadow: var(--shadow);
 }
 .preference-help {
-  font-size: 12px;
+  font-size: 0.75rem;
   margin-bottom: 18px;
 }
 .preferences-grid {
@@ -50,7 +50,7 @@
   padding: 12px 14px;
   background: white;
   text-align: left;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #374266;
 }
 .badge-preferencia.ativa {
@@ -71,7 +71,7 @@
 .perfil-tabs .nav-link {
   border: 0;
   border-radius: 13px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #505b7b;
   padding: 11px 14px;
   background: transparent;
@@ -89,21 +89,21 @@
   box-shadow: var(--shadow);
 }
 .card-local h3 {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .card-local p {
   line-height: 1.7;
 }
 .estrelas {
   color: #65708a;
-  font-size: 11px;
+  font-size: 0.6875rem;
   white-space: nowrap;
 }
 .demo-banner {
   background: #f0f1fb;
   border-radius: 12px;
   padding: 10px 14px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: #5c6581;
 }
 .demo-banner i {
@@ -114,14 +114,14 @@
     grid-template-columns: 1fr;
   }
   .perfil-header h1 {
-    font-size: 22px;
+    font-size: 1.375rem;
   }
   .preferences-panel {
     padding: 20px;
   }
   .perfil-tabs .nav-link {
     padding: 10px;
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .card-local .d-flex {
     flex-wrap: wrap;

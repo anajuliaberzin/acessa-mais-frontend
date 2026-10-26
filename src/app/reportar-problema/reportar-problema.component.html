@@ -1,4 +1,4 @@
-<div class="container reportar-container py-4 py-md-5">
+<main class="container reportar-container py-4 py-md-5">
   <div class="report-form-column">
     <header class="mb-4">
       <h1 class="h3 fw-bold mb-2">Reportar problema</h1>
@@ -33,7 +33,7 @@
             placeholder="Pesquise um endereço"
             formControlName="endereco"
             (input)="limparCoordenadas()"
-            [class.is-invalid]="f.endereco.invalid && f.endereco.touched"
+            [class.is-invalid]="f.endereco.invalid && f.endereco.touched" [attr.aria-invalid]="f.endereco.invalid && f.endereco.touched"
             aria-describedby="enderecoAjuda enderecoErro"
           />
         </div>
@@ -66,10 +66,10 @@
       </div>
 
       <label class="d-block mb-3"
-        ><input type="checkbox" formControlName="confirmadoSorocaba" /> Confirmo que este endereço
+        ><input type="checkbox" formControlName="confirmadoSorocaba" [attr.aria-invalid]="f.confirmadoSorocaba.invalid && f.confirmadoSorocaba.touched" aria-describedby="cidade-erro" /> Confirmo que este endereço
         fica em Sorocaba/SP.</label
       >
-      <p class="text-danger" *ngIf="f.confirmadoSorocaba.invalid && f.confirmadoSorocaba.touched">
+      <p id="cidade-erro" class="text-danger" *ngIf="f.confirmadoSorocaba.invalid && f.confirmadoSorocaba.touched">
         Confirme a localização em Sorocaba/SP.
       </p>
       <!-- Tipo de problema -->
@@ -79,7 +79,7 @@
           id="tipoProblema"
           class="form-select"
           formControlName="tipoProblema"
-          [class.is-invalid]="f.tipoProblema.invalid && f.tipoProblema.touched"
+          [class.is-invalid]="f.tipoProblema.invalid && f.tipoProblema.touched" [attr.aria-invalid]="f.tipoProblema.invalid && f.tipoProblema.touched"
           aria-describedby="tipoProblemaErro"
         >
           <option value="" disabled selected>Selecione o tipo de problema</option>
@@ -103,7 +103,7 @@
           rows="4"
           placeholder="Descreva o problema com o máximo de detalhes possível"
           formControlName="descricao"
-          [class.is-invalid]="f.descricao.invalid && f.descricao.touched"
+          [class.is-invalid]="f.descricao.invalid && f.descricao.touched" [attr.aria-invalid]="f.descricao.invalid && f.descricao.touched"
           aria-describedby="descricaoErro"
         ></textarea>
         <div
@@ -134,10 +134,10 @@
         <p *ngIf="erroFoto()" role="alert" class="text-danger">{{ erroFoto() }}</p>
 
         <div class="upload-area" *ngIf="!previaFoto()">
-          <label for="foto" class="upload-label">
+          <button type="button" class="upload-label" (click)="inputFoto.click()">
             <i class="bi bi-camera fs-3" aria-hidden="true"></i>
-            <span>Toque para escolher uma foto</span>
-          </label>
+            <span>Escolher uma foto</span>
+          </button>
         </div>
 
         <div class="preview-foto" *ngIf="previaFoto()">
@@ -188,4 +188,4 @@
       </button>
     </div>
   </div>
-</div>
+</main>

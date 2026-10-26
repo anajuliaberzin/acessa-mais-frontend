@@ -15,7 +15,7 @@
   margin: 0 0 8px;
 }
 .page-heading h1 {
-  font-size: 28px;
+  font-size: 1.75rem;
   margin: 0 0 8px;
 }
 .page-heading p {
@@ -33,12 +33,12 @@
   gap: 24px;
 }
 .search-panel legend {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   margin-bottom: 12px;
 }
 .search-panel label {
-  font-size: 12px;
+  font-size: 0.75rem;
   display: block;
   margin-bottom: 6px;
   color: var(--muted);
@@ -49,7 +49,7 @@
   border-radius: 99px;
   background: #fff;
   padding: 11px 14px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   box-shadow: 0 2px 3px #2733480a;
 }
 .search-panel input[aria-invalid='true'] {
@@ -68,13 +68,13 @@
 }
 .demo-note {
   grid-column: 1;
-  font-size: 11px;
+  font-size: 0.6875rem;
   margin: 0;
   color: var(--muted);
   padding-inline: 6px;
 }
 .form-error {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #b32632;
   margin: 0;
 }
@@ -91,11 +91,11 @@
   width: 100%;
 }
 .comparison-layout h2 {
-  font-size: 17px;
+  font-size: 1.0625rem;
 }
 .result-status,
 .accessibility-note {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
   margin: 10px 0;
 }
@@ -123,7 +123,7 @@
   gap: 8px;
 }
 .route-name {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
 }
 .route-details {
@@ -131,10 +131,10 @@
   gap: 9px;
   margin: 12px 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .metrics {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .metrics strong {
   font-weight: 600;
@@ -147,7 +147,7 @@
   color: #c58a06;
 }
 .selection-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--primary);
   font-weight: 600;
 }
@@ -166,11 +166,11 @@
   gap: 8px;
 }
 .map-heading h2 {
-  font-size: 14px;
+  font-size: 0.875rem;
   margin: 0;
 }
 .mock-badge {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
 }
 svg {
@@ -185,7 +185,7 @@ svg > rect {
 .map-caption {
   padding: 16px 20px;
   background: #fcfefd;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .map-caption p {
   margin: 4px 0;
@@ -228,7 +228,7 @@ svg > rect {
     min-width: 0;
   }
   .page-heading h1 {
-    font-size: 26px;
+    font-size: 1.625rem;
   }
 }
 
@@ -244,11 +244,11 @@ svg > rect {
   background: var(--soft);
   padding: 10px 12px;
   color: var(--primary);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 .address-hint {
-  font-size: 11px;
+  font-size: 0.6875rem;
   margin: 8px 0 0;
 }
 .address-results {
@@ -268,7 +268,7 @@ svg > rect {
   background: white;
   text-align: left;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .address-results button:hover {
   border-color: var(--primary);

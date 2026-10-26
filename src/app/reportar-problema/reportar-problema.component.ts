@@ -118,6 +118,7 @@ export class ReportarProblemaComponent {
     if (this.estado() === 'enviando') return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      setTimeout(() => document.querySelector<HTMLElement>('[formControlName].ng-invalid')?.focus());
       return;
     }
 

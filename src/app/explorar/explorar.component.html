@@ -101,7 +101,7 @@
           <span>{{ p.count }} locais encontrados</span>
         }
       </div>
-      <section aria-live="polite" [attr.aria-busy]="carregando()">
+      <section [attr.aria-busy]="carregando()">
         @if (carregando()) {
           <p class="empty-state" role="status">Buscando locais em Sorocaba…</p>
         }
@@ -121,7 +121,7 @@
         }
         <div class="results-grid">
           @for (local of pagina()?.results; track local.id) {
-            <button class="result-card surface" (click)="abrir(local)">
+            <article class="result-card surface">
               <h3>{{ local.nome }}</h3>
               <p>{{ local.categoria }} · {{ local.endereco }}</p>
               <span class="score-badge" [attr.data-level]="local.acessibilidade.classificacao">{{
@@ -131,7 +131,8 @@
                     '/100 · ' +
                     local.acessibilidade.classificacao
               }}</span>
-            </button>
+              <button class="secondary-btn" (click)="abrir(local)" [attr.aria-label]="'Ver informações de ' + local.nome">Ver informações</button>
+            </article>
           }
         </div>
       </section>
@@ -157,14 +158,14 @@
             <h2>{{ local.nome }}</h2>
             <button
               class="close-detail"
-              (click)="selecionado.set(null)"
+              (click)="fechar()"
               aria-label="Fechar detalhes"
             >
               <i class="bi bi-x-lg" aria-hidden="true"></i>
             </button>
           </div>
           <p>{{ local.endereco }}</p>
-          <p>{{ local.descricao }}</p>
+          <p data-read-aloud>{{ local.descricao }}</p>
           <span class="score-badge" [attr.data-level]="local.acessibilidade.classificacao">{{
             local.acessibilidade.nota === null
               ? 'Nota não calculada'

@@ -142,13 +142,17 @@ export class ExplorarComponent implements AfterViewInit, OnDestroy {
           iconAnchor: [12, 12],
         }),
         title: local.nome,
+        alt: local.nome + ': ' + (local.acessibilidade.classificacao ?? 'nota não calculada'),
       })
         .bindTooltip(tooltip)
         .on('click', () => this.abrir(local))
         .addTo(this.markers);
     }
   }
+  private acionador: HTMLElement | null = null;
+  fechar() { this.selecionado.set(null); this.acionador?.focus(); }
   abrir(local: Local) {
+    this.acionador = document.activeElement as HTMLElement;
     this.selecionado.set(local);
     if (local.latitude != null && local.longitude != null)
       this.map?.setView([local.latitude, local.longitude], 15);

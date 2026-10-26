@@ -23,7 +23,7 @@
   padding: 5px 14px;
   color: #24438c;
   background: #e2ecff;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 .eyebrow::before {
@@ -31,7 +31,7 @@
   margin-right: 8px;
 }
 h1 {
-  font-size: clamp(36px, 4.5vw, 58px);
+  font-size: clamp(2.25rem, 4.5vw + 1rem, 3.625rem);
   font-weight: 800;
   letter-spacing: -0.055em;
   line-height: 1.13;
@@ -44,7 +44,7 @@ h1 span {
   color: transparent;
 }
 .hero-copy {
-  font-size: 19px;
+  font-size: 1.1875rem;
   margin-bottom: 34px;
 }
 .search-label {
@@ -70,7 +70,7 @@ h1 span {
   box-shadow: 0 2px 3px #21234312;
 }
 .search-box i {
-  font-size: 18px;
+  font-size: 1.125rem;
   color: var(--muted);
 }
 .search-box input {
@@ -97,7 +97,7 @@ h1 span {
   border-radius: 30px;
   background: var(--soft);
   padding: 8px 13px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   text-decoration: none;
   color: #263664;
 }
@@ -115,7 +115,7 @@ h1 span {
 }
 .categories-section > p {
   margin: 8px 0 26px;
-  font-size: 16px;
+  font-size: 1rem;
 }
 .category-grid {
   display: grid;
@@ -140,17 +140,17 @@ h1 span {
   border-color: #a6a1eb;
 }
 .category-grid span {
-  font-size: 23px;
+  font-size: 1.4375rem;
   display: block;
   margin-bottom: 10px;
 }
 .category-grid h3 {
-  font-size: 16px;
+  font-size: 1rem;
   margin-bottom: 5px;
   letter-spacing: -0.025em;
 }
 .category-grid p {
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
   margin: 0;
 }
@@ -180,12 +180,12 @@ h1 span {
   border-radius: 50%;
   background: linear-gradient(135deg, #7844d4, #3c83cb);
   color: white;
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: 700;
   margin-bottom: 18px;
 }
 .steps-grid p {
-  font-size: 16px;
+  font-size: 1rem;
   margin: 8px 0 0;
 }
 .places-section {
@@ -220,10 +220,10 @@ h1 span {
   padding: 20px;
 }
 .place-card h3 {
-  font-size: 16px;
+  font-size: 1rem;
 }
 .place-card p {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .place-meta {
   text-transform: capitalize;
@@ -236,14 +236,14 @@ h1 span {
   margin: 14px 0;
 }
 .tags span {
-  font-size: 11px;
+  font-size: 0.6875rem;
   background: #f1f3fb;
   border-radius: 6px;
   padding: 3px 7px;
   color: var(--muted);
 }
 .place-card button {
-  font-size: 12px;
+  font-size: 0.75rem;
   min-height: 36px;
   padding: 7px 14px;
 }
@@ -258,12 +258,12 @@ h1 span {
   display: flex;
   align-items: center;
   gap: 24px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .home-footer > a {
   font-weight: 800;
-  font-size: 19px;
+  font-size: 1.1875rem;
   color: var(--ink);
   text-decoration: none;
 }
@@ -294,7 +294,7 @@ h1 span {
     padding-top: 28px;
   }
   .hero-copy {
-    font-size: 16px;
+    font-size: 1rem;
   }
   .hero-actions {
     flex-wrap: wrap;

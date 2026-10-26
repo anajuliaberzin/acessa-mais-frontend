@@ -42,5 +42,7 @@ export class HomeComponent {
   todos() { this.nome = this.categoria = this.necessidade = this.recurso = ''; this.buscar(); }
   mostrarDestaques() { this.nome = this.categoria = this.necessidade = this.recurso = ''; this.destaque = true; this.numeroPagina = 1; this.carregar(); }
   mudarPagina(delta: number) { this.numeroPagina += delta; this.carregar(); }
-  abrir(local: Local) { this.selecionado.set(local); setTimeout(() => document.getElementById('info-local-painel')?.focus()); }
+  private acionador: HTMLElement | null = null;
+  fechar() { this.selecionado.set(null); this.acionador?.focus(); }
+  abrir(local: Local) { this.acionador = document.activeElement as HTMLElement; this.selecionado.set(local); setTimeout(() => document.getElementById('info-local-painel')?.focus()); }
 }

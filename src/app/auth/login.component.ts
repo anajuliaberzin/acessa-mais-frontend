@@ -19,11 +19,11 @@ import { AuthService } from './auth.service';
         @if (expired) { <p role="status">Sua sessão expirou. Entre novamente.</p> }
         <form [formGroup]="form" (ngSubmit)="submit()" [attr.aria-busy]="loading()">
           <label for="username">Usuário</label>
-          <input id="username" autocomplete="username" formControlName="username" required />
+          <input id="username" autocomplete="username" formControlName="username" [attr.aria-invalid]="form.controls.username.touched && form.controls.username.invalid" aria-describedby="login-error" required />
           <label for="password">Senha</label>
           <input id="password" type="password" autocomplete="current-password"
-            formControlName="password" required />
-          @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+            formControlName="password" [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid" aria-describedby="login-error" required />
+          @if (error()) { <p id="login-error" class="error" role="alert">{{ error() }}</p> }
           <button type="submit" [disabled]="loading()">
             {{ loading() ? 'Entrando…' : 'Entrar' }}
           </button>
@@ -71,6 +71,7 @@ export class LoginComponent {
     this.error.set('');
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      setTimeout(() => document.querySelector<HTMLElement>('[formControlName].ng-invalid')?.focus());
       this.error.set('Preencha o usuário e a senha.');
       return;
     }

@@ -113,8 +113,7 @@ import { TIPOS_PROBLEMA } from '../models/ocorrencia.model';
               <h2>Evolução das ocorrências</h2>
               <div
                 class="vertical-chart"
-                role="img"
-                aria-label="Ocorrências por dia; valores apresentados abaixo de cada barra"
+                aria-hidden="true"
               >
                 @for (item of i.evolucao; track item.dia) {
                   <div class="vertical-column">
@@ -128,6 +127,7 @@ import { TIPOS_PROBLEMA } from '../models/ocorrencia.model';
                   <p class="chart-empty">O histórico aparecerá após as primeiras ocorrências.</p>
                 }
               </div>
+              <details><summary>Ver valores por dia</summary><table class="table"><caption>Ocorrências por dia no período selecionado</caption><thead><tr><th scope="col">Data</th><th scope="col">Quantidade</th></tr></thead><tbody>@for(item of i.evolucao; track item.dia){<tr><th scope="row">{{ item.dia | date:'dd/MM/yyyy' }}</th><td>{{ item.total }}</td></tr>}</tbody></table></details>
             </section>
             <section>
               <h2>Locais por nível de acessibilidade</h2>
@@ -204,13 +204,14 @@ import { TIPOS_PROBLEMA } from '../models/ocorrencia.model';
           <h2 class="h4 mt-5">Ocorrências</h2>
           <div class="table-responsive">
             <table class="table">
+              <caption>Ocorrências do município e ações de atendimento</caption>
               <thead>
                 <tr>
-                  <th>Protocolo</th>
-                  <th>Data</th>
-                  <th>Endereço</th>
-                  <th>Status</th>
-                  <th>Ação</th>
+                  <th scope="col">Protocolo</th>
+                  <th scope="col">Data</th>
+                  <th scope="col">Endereço</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Ação</th>
                 </tr>
               </thead>
               <tbody>

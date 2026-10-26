@@ -8,10 +8,10 @@ header {
   padding: 0 2px;
 }
 header h1 {
-  font-size: 28px;
+  font-size: 1.75rem;
 }
 header p {
-  font-size: 14px;
+  font-size: 0.875rem;
   max-width: 590px;
 }
 form {
@@ -22,11 +22,11 @@ form {
   box-shadow: var(--shadow);
 }
 .form-label {
-  font-size: 13px;
+  font-size: 0.8125rem;
   margin-bottom: 8px;
 }
 .form-text {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
   margin-top: 8px;
 }
@@ -76,7 +76,7 @@ form {
   justify-content: center;
   gap: 12px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   cursor: pointer;
 }
 .preview-foto img {
@@ -86,10 +86,10 @@ form {
   border-radius: 20px;
 }
 .invalid-feedback {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 form > label {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 form > label input {
