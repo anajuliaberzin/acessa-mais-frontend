@@ -54,6 +54,7 @@
   margin: 28px 0 0;
 }
 .charts-grid > section {
+  min-width: 0;
   width: 100%;
   padding: 24px;
   margin: 0;
@@ -149,7 +150,8 @@ nav button {
     grid-template-columns: 1fr;
   }
   .dashboard .row.g-3.mb-4 > div {
-    width: 50%;
+    flex: 1 1 12rem;
+    width: auto;
   }
   .dashboard .row.g-3.mb-4 .card {
     padding: 16px !important;
@@ -165,7 +167,7 @@ nav button {
 }
 .horizontal-row {
   display: grid;
-  grid-template-columns: minmax(90px, 1fr) 1.5fr 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) auto;
   gap: 10px;
   align-items: center;
   margin: 12px 0;
