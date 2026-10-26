@@ -2,12 +2,13 @@ import { Component, inject, signal, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { HomeFooterComponent } from './home-footer.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../auth/auth.service';
 import { PlataformaService, Local, Pagina, RECURSOS } from '../services/plataforma.service';
 
 @Component({
-  selector: 'app-home', standalone: true, imports: [RouterLink, CommonModule, FormsModule],
+  selector: 'app-home', standalone: true, imports: [RouterLink, CommonModule, FormsModule, HomeFooterComponent],
   templateUrl: './home.component.html', styleUrl: './home.component.css',
 })
 export class HomeComponent {
@@ -42,5 +43,7 @@ export class HomeComponent {
   todos() { this.nome = this.categoria = this.necessidade = this.recurso = ''; this.buscar(); }
   mostrarDestaques() { this.nome = this.categoria = this.necessidade = this.recurso = ''; this.destaque = true; this.numeroPagina = 1; this.carregar(); }
   mudarPagina(delta: number) { this.numeroPagina += delta; this.carregar(); }
-  abrir(local: Local) { this.selecionado.set(local); setTimeout(() => document.getElementById('info-local-painel')?.focus()); }
+  private acionador: HTMLElement | null = null;
+  fechar() { this.selecionado.set(null); this.acionador?.focus(); }
+  abrir(local: Local) { this.acionador = document.activeElement as HTMLElement; this.selecionado.set(local); setTimeout(() => document.getElementById('info-local-painel')?.focus()); }
 }

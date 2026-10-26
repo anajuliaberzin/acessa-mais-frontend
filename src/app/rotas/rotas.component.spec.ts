@@ -67,12 +67,17 @@ describe('Rotas integradas à API', () => {
     await fixture.whenStable();
     const element = fixture.nativeElement as HTMLElement;
     async function preencher(values = ['-23.5015', '-47.4526', '-23.5100', '-47.4600']) {
-      const ids = ['origem-latitude', 'origem-longitude', 'destino-latitude', 'destino-longitude'];
-      ids.forEach((id, i) => {
-        const input = element.querySelector<HTMLInputElement>('#' + id)!;
-        input.value = values[i];
-        input.dispatchEvent(new Event('input'));
+      fixture.componentInstance.selecionarEndereco(0, {
+        endereco: 'Rua da Penha, Sorocaba',
+        latitude: Number(values[0]),
+        longitude: Number(values[1]),
       });
+      fixture.componentInstance.selecionarEndereco(1, {
+        endereco: 'Avenida Ipanema, Sorocaba',
+        latitude: Number(values[2]),
+        longitude: Number(values[3]),
+      });
+      fixture.detectChanges();
       await fixture.whenStable();
     }
     function enviar() {
@@ -82,12 +87,13 @@ describe('Rotas integradas à API', () => {
     return { fixture, element, preencher, enviar };
   }
 
-  it('inicia com quatro campos rotulados, sem resultados', async () => {
+  it('inicia com dois campos de endereço rotulados, sem campos de coordenadas', async () => {
     const { element } = await setup();
-    for (const input of element.querySelectorAll('input[type=number]')) {
+    for (const input of element.querySelectorAll('input[type=text]')) {
       expect(element.querySelector('label[for="' + input.id + '"]')).toBeTruthy();
     }
-    expect(element.querySelectorAll('input[type=number]')).toHaveLength(4);
+    expect(element.querySelectorAll('input[type=number]')).toHaveLength(0);
+    expect(element.querySelectorAll('input[type=text]')).toHaveLength(2);
     expect(element.querySelector('.active-route')).toBeNull();
     http.expectNone(url);
   });
@@ -98,11 +104,35 @@ describe('Rotas integradas à API', () => {
     expect(element.querySelector('[role=alert]')?.textContent).toContain('Informe a origem');
     await preencher(['91', '-47', '-23', '-181']);
     enviar();
-    expect(element.querySelector('#origem-latitude')?.getAttribute('aria-invalid')).toBe('true');
+    expect(element.querySelector('[role=alert]')?.textContent).toContain('Informe a origem');
     await preencher(['0', '0', '0', '0']);
     enviar();
-    expect(element.querySelector('[role=status]')?.textContent).toContain('são iguais');
+    expect(element.querySelector('.result-status')?.textContent).toContain('são iguais');
     http.expectNone(url);
+  });
+
+  it('busca endereço público, exige seleção e invalida coordenadas quando o texto é editado', async () => {
+    const { element, fixture } = await setup();
+    const input = element.querySelector<HTMLInputElement>('#origem-endereco')!;
+    input.value = 'Rua da Penha, 400';
+    input.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+    element.querySelector<HTMLButtonElement>('.address-search')!.click();
+    const busca = http.expectOne((r) => r.url.endsWith('/rotas/enderecos/'));
+    expect(busca.request.params.get('q')).toBe('Rua da Penha, 400');
+    expect(busca.request.headers.has('Authorization')).toBe(false);
+    busca.flush({
+      results: [{ endereco: 'Rua da Penha, 400, Sorocaba', latitude: -23.5, longitude: -47.45 }],
+    });
+    await fixture.whenStable();
+    expect(fixture.componentInstance.pontos[0].latitude).toBeNull();
+    element.querySelector<HTMLButtonElement>('.address-results button')!.click();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.pontos[0].latitude).toBe(-23.5);
+    input.value = 'Outro endereço';
+    input.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+    expect(fixture.componentInstance.pontos[0].latitude).toBeNull();
   });
 
   it('envia coordenadas numéricas sem token e mostra carregamento', async () => {
@@ -170,7 +200,7 @@ describe('Rotas integradas à API', () => {
   });
 
   for (const [status, texto] of [
-    [400, 'coordenadas'],
+    [400, 'endereços'],
     [404, 'Nenhuma rota'],
     [502, 'inválida'],
     [503, 'indisponível'],

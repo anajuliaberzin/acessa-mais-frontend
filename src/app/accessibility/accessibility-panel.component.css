@@ -1,0 +1,26 @@
+:host{position:fixed;right:max(1rem,env(safe-area-inset-right));bottom:max(1rem,env(safe-area-inset-bottom));z-index:1200;max-width:calc(100vw - 2rem)}button{border:1px solid var(--line);border-radius:.8rem;background:var(--surface,#fff);color:var(--ink);padding:.65rem .85rem;min-height:2.75rem;font-size:.875rem;font-weight:600}.accessibility-trigger{display:flex;align-items:center;gap:.5rem;margin-left:auto;background:var(--primary);color:white;border:2px solid white;box-shadow:var(--shadow)}.accessibility-trigger i{font-size:1.4rem}section{position:absolute;right:0;bottom:calc(100% + .5rem);width:21rem;max-width:calc(100vw - 2rem);max-height:calc(100dvh - 6rem);overflow:auto;overscroll-behavior:contain;padding:1.2rem;border:1px solid var(--line);border-radius:1.2rem;background:var(--surface,#fff);box-shadow:0 .5rem 2rem #171a3033}.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:1rem}h2{font-size:1.15rem;margin:0;overflow-wrap:anywhere}.panel-heading button{font-size:1.2rem}fieldset{margin:1rem 0 0}legend{font-size:.9rem;font-weight:700}.font-controls,.speech-controls{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}.font-controls output{flex:1;text-align:center}.wide{display:block;width:100%;text-align:left;margin-top:.65rem}.wide[aria-pressed=true]{border:2px solid currentColor}.wide span{display:block;font-size:.75rem}p{font-size:.8rem;line-height:1.6;margin:.6rem 0}.panel-note{border-top:1px solid var(--line);padding-top:.75rem}@media(max-width:600px){.accessibility-trigger span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}section{width:min(21rem,calc(100vw - 2rem))}}
+.accessibility-trigger {
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface, #fff);
+  color: var(--primary);
+  box-shadow: 0 2px 8px #171a3014;
+}
+.accessibility-trigger i { font-size: 22px; }
+.accessibility-trigger span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.accessibility-trigger:hover { border-color: currentColor; }
+.accessibility-trigger:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}

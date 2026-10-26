@@ -1,105 +1,147 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { PREFERENCIAS_DISPONIVEIS } from '../models/perfil.model';
 import {
-  LocalAvaliado,
-  LocalFavorito,
-  OcorrenciaResumo,
-  PREFERENCIAS_DISPONIVEIS,
-  PreferenciaAcessibilidade,
-  UsuarioPerfil,
-} from '../models/perfil.model';
+  Local,
+  MinhaAvaliacao,
+  Pagina,
+  PerfilAtual,
+  PlataformaService,
+  Registro,
+  rotuloStatus,
+} from '../services/plataforma.service';
+import { SessaoService } from '../auth/sessao.service';
 
 type Aba = 'avaliacoes' | 'ocorrencias' | 'favoritos';
-
 @Component({
   selector: 'app-perfil',
-  standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './perfil.component.html',
-  styleUrls: ['./perfil.component.css'],
+  styleUrl: './perfil.component.css',
 })
 export class PerfilComponent {
+  private readonly api = inject(PlataformaService);
+  private readonly sessao = inject(SessaoService);
+  private readonly destroyRef = inject(DestroyRef);
   readonly preferenciasDisponiveis = PREFERENCIAS_DISPONIVEIS;
+  readonly usuario = signal<PerfilAtual | null>(null);
   readonly abaAtiva = signal<Aba>('avaliacoes');
-
-  // TODO: substituir pelos dados reais vindos da API (GET /api/usuarios/{id})
-  // assim que o backend expuser o endpoint de perfil.
-  readonly usuario = signal<UsuarioPerfil>({
-    id: 'u1',
-    nome: 'Ana Julia Ribeiro',
-    cidade: 'Sorocaba',
-    uf: 'SP',
-    membroDesde: '2025-01-01',
-    preferencias: ['cadeirante', 'mobilidade_reduzida'],
-  });
-
-  readonly avaliacoes = signal<LocalAvaliado[]>([
-    { id: 'a1', nomeLocal: 'Hospital Santa Lucinda', nota: 5, comentario: 'Rampas em todas as entradas e recepção com atendimento prioritário organizado.', data: '2026-06-12' },
-    { id: 'a2', nomeLocal: 'Shopping Cidade Sorocaba', nota: 4, comentario: 'Boas vagas de acessibilidade, mas elevador do estacionamento demora.', data: '2026-05-30' },
-    { id: 'a3', nomeLocal: 'Esplanada Shopping', nota: 5, comentario: 'Banheiros adaptados bem sinalizados.', data: '2026-04-18' },
-  ]);
-
-  readonly ocorrencias = signal<OcorrenciaResumo[]>([
-    { id: 'o1', descricaoResumo: 'Rampa danificada na Rua Doutor Álvaro Soares', tipoProblema: 'Rampa ausente ou inadequada', status: 'em_analise', data: '2026-07-02' },
-    { id: 'o2', descricaoResumo: 'Piso tátil interrompido na Av. Ipanema', tipoProblema: 'Piso tátil ausente ou danificado', status: 'confirmada', data: '2026-06-20' },
-  ]);
-
-  readonly favoritos = signal<LocalFavorito[]>([
-    { id: 'f1', nomeLocal: 'Shopping Cidade Sorocaba', nota: 4, comentario: 'Boas vagas de acessibilidade, mas elevador do estacionamento demora.' },
-    { id: 'f2', nomeLocal: 'Hospital Santa Lucinda', nota: 5, comentario: 'Rampas em todas as entradas e recepção com atendimento prioritário organizado.' },
-    { id: 'f3', nomeLocal: 'Esplanada Shopping', nota: 5, comentario: 'Banheiros adaptados bem sinalizados.' },
-  ]);
-
-  readonly iniciais = computed(() => {
-    const partes = this.usuario().nome.trim().split(/\s+/);
-    const primeira = partes[0]?.[0] ?? '';
-    const ultima = partes.length > 1 ? partes[partes.length - 1][0] : '';
-    return (primeira + ultima).toUpperCase();
-  });
-
-  readonly membroDesdeFormatado = computed(() => {
-    const data = new Date(this.usuario().membroDesde);
-    return data.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-  });
-
-  selecionarAba(aba: Aba): void {
+  readonly avaliacoes = signal<MinhaAvaliacao[]>([]);
+  readonly ocorrencias = signal<Registro[]>([]);
+  readonly favoritos = signal<Local[]>([]);
+  readonly carregando = signal(false);
+  readonly carregandoPerfil = signal(false);
+  readonly salvando = signal(false);
+  readonly erroPerfil = signal('');
+  readonly erro = signal('');
+  readonly mensagem = signal('');
+  readonly paginacao = signal<{
+    next: string | null;
+    previous: string | null;
+    count: number;
+  } | null>(null);
+  readonly status = rotuloStatus;
+  numero = 1;
+  private versao = 0;
+  readonly iniciais = computed(() =>
+    (this.usuario()?.nome.trim().split(/\s+/).filter(Boolean) ?? [])
+      .filter((_, i, partes) => i === 0 || i === partes.length - 1)
+      .map((p) => p[0])
+      .join('')
+      .toUpperCase(),
+  );
+  constructor() {
+    this.carregarPerfil();
+    this.carregar();
+  }
+  carregarPerfil() {
+    this.carregandoPerfil.set(true);
+    this.erroPerfil.set('');
+    this.api
+      .perfil()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (p) => {
+          this.usuario.set(p);
+          this.sessao.perfil.set(p);
+          this.carregandoPerfil.set(false);
+        },
+        error: () => {
+          this.erroPerfil.set('Não foi possível carregar seu perfil.');
+          this.carregandoPerfil.set(false);
+        },
+      });
+  }
+  alternarPreferencia(valor: string) {
+    const usuario = this.usuario();
+    if (!usuario || this.salvando()) return;
+    const preferencias = usuario.preferencias.includes(valor)
+      ? usuario.preferencias.filter((p) => p !== valor)
+      : [...usuario.preferencias, valor];
+    this.salvando.set(true);
+    this.mensagem.set('');
+    this.api
+      .salvarPreferencias(preferencias)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (p) => {
+          this.usuario.set(p);
+          this.sessao.perfil.set(p);
+          this.salvando.set(false);
+          this.mensagem.set('Preferências salvas.');
+        },
+        error: () => {
+          this.salvando.set(false);
+          this.mensagem.set(
+            'Não foi possível salvar. Suas preferências anteriores foram mantidas.',
+          );
+        },
+      });
+  }
+  selecionarAba(aba: Aba) {
     this.abaAtiva.set(aba);
+    this.numero = 1;
+    this.carregar();
   }
-
-  alternarPreferencia(pref: PreferenciaAcessibilidade): void {
-    this.usuario.update((atual) => {
-      const jaSelecionada = atual.preferencias.includes(pref);
-      const preferencias = jaSelecionada
-        ? atual.preferencias.filter((p) => p !== pref)
-        : [...atual.preferencias, pref];
-      return { ...atual, preferencias };
-    });
-    // TODO: persistir a alteração via API (PATCH /api/usuarios/{id}/preferencias).
+  mudar(delta: number) {
+    this.numero += delta;
+    this.carregar();
   }
-
-  estaSelecionada(pref: PreferenciaAcessibilidade): boolean {
-    return this.usuario().preferencias.includes(pref);
-  }
-
-  estrelas(nota: number): boolean[] {
-    return Array.from({ length: 5 }, (_, i) => i < nota);
-  }
-
-  rotuloStatus(status: OcorrenciaResumo['status']): string {
-    const rotulos: Record<OcorrenciaResumo['status'], string> = {
-      em_analise: 'Em análise',
-      confirmada: 'Confirmada',
-      resolvida: 'Resolvida',
+  carregar() {
+    const versao = ++this.versao;
+    this.carregando.set(true);
+    this.erro.set('');
+    this.paginacao.set(null);
+    this.avaliacoes.set([]);
+    this.ocorrencias.set([]);
+    this.favoritos.set([]);
+    const receber = <T>(p: Pagina<T>, aplicar: () => void) => {
+      if (versao !== this.versao) return;
+      aplicar();
+      this.paginacao.set(p);
+      this.carregando.set(false);
     };
-    return rotulos[status];
-  }
-
-  classeStatus(status: OcorrenciaResumo['status']): string {
-    const classes: Record<OcorrenciaResumo['status'], string> = {
-      em_analise: 'text-bg-warning',
-      confirmada: 'text-bg-info',
-      resolvida: 'text-bg-success',
+    const error = () => {
+      if (versao !== this.versao) return;
+      this.erro.set('Não foi possível carregar suas contribuições. Tente novamente.');
+      this.carregando.set(false);
     };
-    return classes[status];
+    if (this.abaAtiva() === 'avaliacoes')
+      this.api
+        .minhasAvaliacoes(this.numero)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({ next: (p) => receber(p, () => this.avaliacoes.set(p.results)), error });
+    else if (this.abaAtiva() === 'favoritos')
+      this.api
+        .meusFavoritos(this.numero)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({ next: (p) => receber(p, () => this.favoritos.set(p.results)), error });
+    else
+      this.api
+        .ocorrencias(false, { page: this.numero })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({ next: (p) => receber(p, () => this.ocorrencias.set(p.results)), error });
   }
 }

@@ -1,11 +1,5 @@
-<div class="container reportar-container py-4 py-md-5">
-  <div class="col-12 col-md-8 col-lg-6 mx-auto">
-
-    <a routerLink="/home" class="link-voltar mb-3 d-inline-flex align-items-center gap-1">
-      <i class="bi bi-arrow-left" aria-hidden="true"></i>
-      Voltar
-    </a>
-
+<main class="container reportar-container py-4 py-md-5">
+  <div class="report-form-column">
     <header class="mb-4">
       <h1 class="h3 fw-bold mb-2">Reportar problema</h1>
       <p class="text-body-secondary mb-0">
@@ -14,14 +8,24 @@
     </header>
 
     <!-- Formulário -->
-    <form *ngIf="estado() !== 'sucesso'" [formGroup]="form" (ngSubmit)="enviar()" novalidate aria-labelledby="tituloFormulario">
-      <h2 id="tituloFormulario" class="visually-hidden">Formulário de reporte de problema de acessibilidade</h2>
+    <form
+      *ngIf="estado() !== 'sucesso'"
+      [formGroup]="form"
+      (ngSubmit)="enviar()"
+      novalidate
+      aria-labelledby="tituloFormulario"
+    >
+      <h2 id="tituloFormulario" class="visually-hidden">
+        Formulário de reporte de problema de acessibilidade
+      </h2>
 
       <!-- Localização -->
       <div class="mb-4">
         <label for="endereco" class="form-label fw-semibold">Localização</label>
         <div class="input-group">
-          <span class="input-group-text bg-white" aria-hidden="true"><i class="bi bi-geo-alt"></i></span>
+          <span class="input-group-text bg-white" aria-hidden="true"
+            ><i class="bi bi-geo-alt"></i
+          ></span>
           <input
             id="endereco"
             type="text"
@@ -29,12 +33,18 @@
             placeholder="Pesquise um endereço"
             formControlName="endereco"
             (input)="limparCoordenadas()"
-            [class.is-invalid]="f.endereco.invalid && f.endereco.touched"
+            [class.is-invalid]="f.endereco.invalid && f.endereco.touched" [attr.aria-invalid]="f.endereco.invalid && f.endereco.touched"
             aria-describedby="enderecoAjuda enderecoErro"
           />
         </div>
-        <div id="enderecoAjuda" class="form-text">Pesquise um endereço ou use sua localização atual.</div>
-        <div id="enderecoErro" class="invalid-feedback d-block" *ngIf="f.endereco.invalid && f.endereco.touched">
+        <div id="enderecoAjuda" class="form-text">
+          Pesquise um endereço ou use sua localização atual.
+        </div>
+        <div
+          id="enderecoErro"
+          class="invalid-feedback d-block"
+          *ngIf="f.endereco.invalid && f.endereco.touched"
+        >
           Informe um endereço válido (mínimo de 5 caracteres).
         </div>
 
@@ -44,14 +54,24 @@
           (click)="usarLocalizacaoAtual()"
           [disabled]="obtendoLocalizacao()"
         >
-          <span *ngIf="obtendoLocalizacao()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span
+            *ngIf="obtendoLocalizacao()"
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+          ></span>
           <i *ngIf="!obtendoLocalizacao()" class="bi bi-crosshair" aria-hidden="true"></i>
           {{ obtendoLocalizacao() ? 'Obtendo localização…' : 'Usar localização atual' }}
         </button>
       </div>
 
-      <label class="d-block mb-3"><input type="checkbox" formControlName="confirmadoSorocaba" /> Confirmo que este endereço fica em Sorocaba/SP.</label>
-      <p class="text-danger" *ngIf="f.confirmadoSorocaba.invalid && f.confirmadoSorocaba.touched">Confirme a localização em Sorocaba/SP.</p>
+      <label class="d-block mb-3"
+        ><input type="checkbox" formControlName="confirmadoSorocaba" [attr.aria-invalid]="f.confirmadoSorocaba.invalid && f.confirmadoSorocaba.touched" aria-describedby="cidade-erro" /> Confirmo que este endereço
+        fica em Sorocaba/SP.</label
+      >
+      <p id="cidade-erro" class="text-danger" *ngIf="f.confirmadoSorocaba.invalid && f.confirmadoSorocaba.touched">
+        Confirme a localização em Sorocaba/SP.
+      </p>
       <!-- Tipo de problema -->
       <div class="mb-4">
         <label for="tipoProblema" class="form-label fw-semibold">Tipo de problema</label>
@@ -59,13 +79,17 @@
           id="tipoProblema"
           class="form-select"
           formControlName="tipoProblema"
-          [class.is-invalid]="f.tipoProblema.invalid && f.tipoProblema.touched"
+          [class.is-invalid]="f.tipoProblema.invalid && f.tipoProblema.touched" [attr.aria-invalid]="f.tipoProblema.invalid && f.tipoProblema.touched"
           aria-describedby="tipoProblemaErro"
         >
           <option value="" disabled selected>Selecione o tipo de problema</option>
           <option *ngFor="let tipo of tiposProblema" [value]="tipo.valor">{{ tipo.rotulo }}</option>
         </select>
-        <div id="tipoProblemaErro" class="invalid-feedback d-block" *ngIf="f.tipoProblema.invalid && f.tipoProblema.touched">
+        <div
+          id="tipoProblemaErro"
+          class="invalid-feedback d-block"
+          *ngIf="f.tipoProblema.invalid && f.tipoProblema.touched"
+        >
           Selecione o tipo de problema encontrado.
         </div>
       </div>
@@ -79,10 +103,14 @@
           rows="4"
           placeholder="Descreva o problema com o máximo de detalhes possível"
           formControlName="descricao"
-          [class.is-invalid]="f.descricao.invalid && f.descricao.touched"
+          [class.is-invalid]="f.descricao.invalid && f.descricao.touched" [attr.aria-invalid]="f.descricao.invalid && f.descricao.touched"
           aria-describedby="descricaoErro"
         ></textarea>
-        <div id="descricaoErro" class="invalid-feedback d-block" *ngIf="f.descricao.invalid && f.descricao.touched">
+        <div
+          id="descricaoErro"
+          class="invalid-feedback d-block"
+          *ngIf="f.descricao.invalid && f.descricao.touched"
+        >
           Descreva o problema com pelo menos 10 caracteres.
         </div>
       </div>
@@ -95,19 +123,30 @@
         <!-- Fora dos blocos *ngIf de propósito: uma variável de referência de
              template (#inputFoto) só é visível na mesma view em que foi
              declarada, e não dentro de outro *ngIf irmão. -->
-        <input id="foto" type="file" accept="image/jpeg,image/png,image/webp" class="visually-hidden" (change)="aoSelecionarFoto($event)" #inputFoto />
+        <input
+          id="foto"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          class="visually-hidden"
+          (change)="aoSelecionarFoto($event)"
+          #inputFoto
+        />
         <p *ngIf="erroFoto()" role="alert" class="text-danger">{{ erroFoto() }}</p>
 
         <div class="upload-area" *ngIf="!previaFoto()">
-          <label for="foto" class="upload-label">
+          <button type="button" class="upload-label" (click)="inputFoto.click()">
             <i class="bi bi-camera fs-3" aria-hidden="true"></i>
-            <span>Toque para escolher uma foto</span>
-          </label>
+            <span>Escolher uma foto</span>
+          </button>
         </div>
 
         <div class="preview-foto" *ngIf="previaFoto()">
           <img [src]="previaFoto()" alt="Pré-visualização da foto anexada ao reporte" />
-          <button type="button" class="btn btn-sm btn-outline-danger mt-2" (click)="removerFoto(inputFoto)">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-danger mt-2"
+            (click)="removerFoto(inputFoto)"
+          >
             <i class="bi bi-trash" aria-hidden="true"></i> Remover foto
           </button>
         </div>
@@ -117,8 +156,17 @@
         {{ erroEnvio() }}
       </div>
 
-      <button type="submit" class="btn btn-acessa w-100 py-2 fw-semibold" [disabled]="estado() === 'enviando'">
-        <span *ngIf="estado() === 'enviando'" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+      <button
+        type="submit"
+        class="btn btn-acessa w-100 py-2 fw-semibold"
+        [disabled]="estado() === 'enviando'"
+      >
+        <span
+          *ngIf="estado() === 'enviando'"
+          class="spinner-border spinner-border-sm me-2"
+          role="status"
+          aria-hidden="true"
+        ></span>
         {{ estado() === 'enviando' ? 'Enviando…' : 'Enviar ocorrência' }}
       </button>
     </form>
@@ -127,13 +175,17 @@
     <div *ngIf="estado() === 'sucesso'" class="text-center py-5" role="status" aria-live="polite">
       <i class="bi bi-check-circle-fill text-acessa display-4" aria-hidden="true"></i>
       <h2 class="h4 fw-bold mt-3">Ocorrência enviada!</h2>
-      <p>Protocolo: <strong>{{ protocolo() }}</strong></p>
+      <p>
+        Protocolo: <strong>{{ protocolo() }}</strong>
+      </p>
       <a routerLink="/ocorrencias">Acompanhar minhas ocorrências</a>
       <p class="text-body-secondary">
-        Obrigado por contribuir. Sua ocorrência será analisada e ajudará outras pessoas a planejar seus deslocamentos.
+        Obrigado por contribuir. Sua ocorrência será analisada e ajudará outras pessoas a planejar
+        seus deslocamentos.
       </p>
-      <button type="button" class="btn btn-acessa mt-2" (click)="novoReporte()">Reportar outro problema</button>
+      <button type="button" class="btn btn-acessa mt-2" (click)="novoReporte()">
+        Reportar outro problema
+      </button>
     </div>
-
   </div>
-</div>
+</main>

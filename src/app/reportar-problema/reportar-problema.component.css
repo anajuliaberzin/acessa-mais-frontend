@@ -1,93 +1,106 @@
-/* Paleta ACESSA+: verde-azulado como cor de destaque (acessibilidade/disponibilidade),
-   fundo neutro claro e alto contraste no texto, seguindo a linha visual do protótipo
-   de referência (mapa-amigo-urbano). Ajuste --acessa-primary para a cor de marca final. */
-:host {
-  --acessa-primary: #7c3aed;
---acessa-primary-dark: #6d28d9;
-  --acessa-radius: 0.75rem;
-}
-
 .reportar-container {
-  max-width: 640px;
+  max-width: 688px;
 }
-
-.link-voltar {
-  color: var(--acessa-primary);
-  text-decoration: none;
-  font-weight: 500;
+.report-form-column {
+  width: 100%;
 }
-
-.link-voltar:hover {
-  color: var(--acessa-primary-dark);
-  text-decoration: underline;
+header {
+  padding: 0 2px;
 }
-
+header h1 {
+  font-size: 1.75rem;
+}
+header p {
+  font-size: 0.875rem;
+  max-width: 590px;
+}
+form {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+.form-label {
+  font-size: 0.8125rem;
+  margin-bottom: 8px;
+}
+.form-text {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 8px;
+}
 .form-control,
 .form-select {
-  border-radius: var(--acessa-radius);
-  padding-top: 0.6rem;
-  padding-bottom: 0.6rem;
+  border-radius: 19px;
 }
-
-.form-control:focus,
-.form-select:focus {
-  border-color: var(--acessa-primary);
-  box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.25);
-}
-
 .input-group-text {
-  border-radius: var(--acessa-radius) 0 0 var(--acessa-radius);
+  border-color: #d4d9e9;
+  border-radius: 20px 0 0 20px;
+  color: var(--muted);
 }
-
+.btn-outline-secondary {
+  border: 0;
+  background: var(--soft);
+  color: #374273;
+  padding: 10px 15px;
+  border-radius: 99px;
+}
 .btn-acessa {
-  background-color: var(--acessa-primary);
-  border-color: var(--acessa-primary);
-  color: #fff;
-  border-radius: var(--acessa-radius);
+  border-radius: 99px;
+  min-height: 48px;
+  background: var(--primary);
+  color: white;
 }
-
-.btn-acessa:hover,
-.btn-acessa:focus {
-  background-color: var(--acessa-primary-dark);
-  border-color: var(--acessa-primary-dark);
-  color: #fff;
+.btn-acessa:hover {
+  background: #3f3bc4;
 }
-
-.btn-acessa:disabled {
-  opacity: 0.7;
-}
-
 .text-acessa {
-  color: var(--acessa-primary);
+  color: var(--primary);
 }
-
 .upload-area {
-  border: 2px dashed #ced4da;
-  border-radius: var(--acessa-radius);
-  padding: 2rem 1rem;
-  text-align: center;
-  background-color: #f8f9fa;
-  transition: border-color 0.15s ease-in-out;
+  border: 1px dashed #cdd2e7;
+  border-radius: 20px;
+  padding: 26px 16px;
+  background: #fdfdff;
 }
-
-.upload-area:hover {
-  border-color: var(--acessa-primary);
+.upload-area:hover,
+.upload-area:focus-within {
+  border-color: var(--primary);
+  background: #f7f7ff;
 }
-
 .upload-label {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  color: #495057;
+  justify-content: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.8125rem;
   cursor: pointer;
-  margin: 0;
 }
-
 .preview-foto img {
   width: 100%;
-  max-height: 260px;
+  max-height: 300px;
   object-fit: cover;
-  border-radius: var(--acessa-radius);
-  border: 1px solid #dee2e6;
+  border-radius: 20px;
+}
+.invalid-feedback {
+  font-size: 0.75rem;
+}
+form > label {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+form > label input {
+  vertical-align: middle;
+  margin-right: 6px;
+}
+@media (max-width: 600px) {
+  form {
+    padding: 20px;
+  }
+  .reportar-container {
+    padding-top: 24px !important;
+  }
 }

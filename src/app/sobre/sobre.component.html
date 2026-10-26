@@ -1,0 +1,43 @@
+<main>
+  <header class="about-hero">
+    <a routerLink="/home" class="back-link"><i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar ao início</a>
+    <span class="eyebrow">SOBRE O ACESSA+</span>
+    <h1>Quem somos nós</h1>
+    <p data-read-aloud>Uma cidade mais inclusiva começa quando a informação chega a todos.</p>
+    <nav aria-label="Nesta página"><a href="#equipe">Conheça a equipe <i class="bi bi-arrow-down" aria-hidden="true"></i></a><a href="#objetivos">Nossos objetivos</a></nav>
+  </header>
+  <div class="about-content">
+    <section class="mission" aria-labelledby="mission-title">
+      <div><span class="eyebrow">TECNOLOGIA COM PROPÓSITO</span><h2 id="mission-title">Informação que aproxima.<br>Participação que transforma.</h2></div>
+      <div><p data-read-aloud>Somos o <strong>Clean Code Squad</strong>, a equipe de desenvolvimento do ACESSA+. Criamos a plataforma para ajudar pessoas a conhecer os recursos de acessibilidade dos locais de Sorocaba.</p><p data-read-aloud>Queremos tornar essas informações mais claras e dar espaço para que a comunidade contribua com a identificação de barreiras na cidade.</p></div>
+    </section>
+    <section id="objetivos" tabindex="-1" aria-labelledby="objectives-title">
+      <span class="eyebrow">O QUE NOS MOVE</span><h2 id="objectives-title">Objetivos da plataforma</h2>
+      <div class="objectives">
+        <article><span class="number" aria-hidden="true">01</span><h3>Facilitar descobertas</h3><p data-read-aloud>Reunir locais e seus recursos de acessibilidade em Sorocaba para apoiar escolhas no dia a dia.</p></article>
+        <article><span class="number" aria-hidden="true">02</span><h3>Apoiar a autonomia</h3><p data-read-aloud>Oferecer informações claras para que cada pessoa encontre espaços adequados às suas necessidades.</p></article>
+        <article><span class="number" aria-hidden="true">03</span><h3>Ouvir a comunidade</h3><p data-read-aloud>Permitir o registro de barreiras e reunir contribuições que ajudem a identificar melhorias para a cidade.</p></article>
+      </div>
+    </section>
+    <section id="equipe" tabindex="-1" aria-labelledby="team-title">
+      <span class="eyebrow">QUEM FAZ ACONTECER</span><h2 id="team-title">Clean Code Squad</h2>
+      <p class="team-intro">As pessoas por trás do ACESSA+.</p>
+      <div class="team-grid">
+        @for (member of team; track member.name) {
+          <article class="member">
+            <div class="portrait-area">
+              @if(member.photo) {<img [src]="member.photo" [alt]="'Foto de ' + member.name" loading="lazy" width="320" height="240">}
+              @else {<span class="initials" aria-hidden="true">{{ member.initials }}</span>}
+            </div>
+            <div class="member-info"><h3>{{ member.name }}</h3><span class="role">{{ member.role || 'Desenvolvimento' }}</span>
+              <p data-read-aloud>{{ member.summary || 'Apresentação em breve.' }}</p>
+              @if(member.linkedin) {<a class="linkedin" [href]="member.linkedin" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'LinkedIn de ' + member.name + ' (abre em nova aba)'"><i class="bi bi-linkedin" aria-hidden="true"></i> LinkedIn <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>}
+              @else {<span class="linkedin pending"><i class="bi bi-linkedin" aria-hidden="true"></i> LinkedIn em breve</span>}
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  </div>
+</main>
+<app-home-footer />
