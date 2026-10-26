@@ -1,0 +1,88 @@
+.pagina {
+  max-width: 1130px;
+  margin: 0 auto;
+  padding: 32px 16px 80px; /* espaço extra por causa da bottom bar no mobile */
+}
+
+/* Cabeçalho */
+.eyebrow {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-soft);
+  color: var(--color-on-primary-soft);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); margin: 16px 0 8px; }
+.destaque { color: var(--color-accent); }
+header p { color: var(--color-text-muted); }
+
+/* Card base */
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+}
+
+/* Filtros */
+.filtros { margin: 24px 0; display: flex; flex-direction: column; gap: 16px; }
+.grupo h2 { font-size: 1rem; margin-bottom: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.chip.ativo {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+.limpar {
+  align-self: flex-start;
+  border: 0;
+  background: none;
+  color: var(--color-accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Mapa e resultados: um embaixo do outro no mobile */
+.conteudo { display: grid; grid-template-columns: 1fr; gap: 24px; }
+
+.legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+.bolinha {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+.bolinha.alto  { background: var(--color-success); }
+.bolinha.medio { background: var(--color-warning); }
+.bolinha.baixo { background: var(--color-danger); }
+
+.resultados h2 { font-size: 1.2rem; margin-bottom: 16px; }
+.item { margin-bottom: 16px; border-radius: var(--radius-lg); }
+.item.destaque { outline: 3px solid var(--color-accent); } /* card do marcador clicado */
+.vazio { color: var(--color-text-muted); }
+
+/* Desktop: mapa ao lado dos resultados */
+@media (min-width: 992px) {
+  .pagina { padding-bottom: 32px; }
+  .conteudo { grid-template-columns: 1.3fr 1fr; align-items: start; }
+  .resultados { max-height: 640px; overflow-y: auto; padding: 4px; }
+}

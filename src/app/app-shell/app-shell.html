@@ -1,0 +1,25 @@
+<!-- Navbar: aparece só no desktop -->
+<header class="navbar">
+  <a routerLink="/home"><app-logo /></a>
+  <nav class="navbar-links">
+    @for (item of menu; track item.rota) {
+      <a [routerLink]="item.rota" routerLinkActive="ativo">{{ item.rotulo }}</a>
+    }
+    <a routerLink="/login" class="btn-entrar">Entrar</a>
+  </nav>
+</header>
+
+<!-- Aqui entram as páginas (home, rotas, painel...) -->
+<main class="conteudo">
+  <router-outlet />
+</main>
+
+<!-- Bottom bar: aparece só no mobile -->
+<nav class="bottombar">
+  @for (item of menu; track item.rota) {
+    <a [routerLink]="item.rota" routerLinkActive="ativo">
+      <i class="bi {{ item.icone }}"></i>
+      <span>{{ item.rotulo }}</span>
+    </a>
+  }
+</nav>

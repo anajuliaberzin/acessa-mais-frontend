@@ -26,3 +26,43 @@ button,
 input {
   font: inherit;
 }
+
+:root {
+  /* Paleta base (azul/roxo) */
+  --blue-500: #4f5de8;
+  --blue-100: #e3ebff;
+  --blue-800: #1e3a9f;
+  --purple-600: #5141bb;
+  --navy-900: #1a2340;
+  --gray-600: #4a5578;
+  --gray-300: #dce0ed;
+  --gray-50: #f6f8ff;
+
+  /* Tokens semânticos: os componentes usam SÓ estes */
+  --color-primary: var(--blue-500);
+  --color-primary-soft: var(--blue-100);
+  --color-on-primary-soft: var(--blue-800);
+  --color-accent: var(--purple-600);
+  --color-bg: var(--gray-50);
+  --color-surface: #ffffff;
+  --color-text: var(--navy-900);
+  --color-text-muted: var(--gray-600);
+  --color-border: var(--gray-300);
+  --color-success: #2f9e5b;
+  --color-warning: #f5a524;
+  --color-danger: #e5484d;
+
+  /* Tipografia: Outfit nos títulos, Inter no corpo */
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Formas e sombras */
+  --radius-md: 16px;
+  --radius-lg: 26px;
+  --radius-pill: 999px;
+  --shadow-card: 0 8px 30px rgba(60, 70, 140, 0.08);
+
+  /* Alturas da navegação */
+  --navbar-height: 64px;
+  --bottombar-height: 64px;
+}

@@ -1,0 +1,54 @@
+<section class="painel">
+  <header class="painel-topo">
+    <span class="eyebrow">Painel do município</span>
+    <h1>Acessibilidade em <span class="destaque">Sorocaba</span></h1>
+    <p>Acompanhe ocorrências e o nível de acessibilidade dos locais.</p>
+  </header>
+  
+  <div class="kpis">
+    @for (kpi of kpis; track kpi.titulo) {
+      <article class="card kpi">
+        <i class="bi {{ kpi.icone }} kpi-icone"></i>
+        <span class="kpi-titulo">{{ kpi.titulo }}</span>
+        <strong class="kpi-valor">{{ kpi.valor }}</strong>
+        <small>{{ kpi.detalhe }}</small>
+      </article>
+    }
+  </div>
+
+  <div class="graficos">
+    <article class="card">
+      <h2>Ocorrências por região</h2>
+      @for (item of ocorrenciasPorRegiao; track item.rotulo) {
+        <div class="linha">
+          <span class="linha-rotulo">{{ item.rotulo }}</span>
+          <div class="linha-trilho">
+            <div class="linha-barra" [style.width.%]="percentual(item.total, maxRegiao)"></div>
+          </div>
+          <span class="linha-valor">{{ item.total }}</span>
+        </div>
+      }
+    </article>
+
+    <article class="card">
+      <h2>Distribuição de scores</h2>
+      <div class="colunas">
+        @for (item of distribuicaoScores; track item.rotulo) {
+          <div class="coluna">
+            <span class="coluna-valor">{{ item.total }}</span>
+            <div class="coluna-barra"
+                 [style.height.%]="percentual(item.total, maxScore)"
+                 [style.background]="item.cor"></div>
+            <span class="coluna-rotulo">{{ item.rotulo }}</span>
+          </div>
+        }
+      </div>
+    </article>
+
+     <!-- Link para voltar à página principal -->
+  <a class="voltar" routerLink="/home">
+    <i class="bi bi-arrow-left"></i> Voltar para o início
+  </a>
+  
+  </div>
+</section>

@@ -1,0 +1,82 @@
+<section class="pagina">
+  <!-- Cabeçalho -->
+  <header>
+    <span class="eyebrow">Mapa interativo</span>
+    <h1>Explore a acessibilidade em <span class="destaque">Sorocaba</span></h1>
+    <p>Clique nos marcadores e use os filtros para encontrar o local ideal.</p>
+  </header>
+
+  <!-- Filtros -->
+  <div class="card filtros">
+    <div class="grupo">
+      <h2>Categoria</h2>
+      <div class="chips">
+        <button type="button" class="chip" [class.ativo]="categoriaSelecionada === null"
+                (click)="selecionarCategoria(null)">Todas</button>
+        @for (c of categorias; track c) {
+          <button type="button" class="chip" [class.ativo]="categoriaSelecionada === c"
+                  (click)="selecionarCategoria(c)">{{ c }}</button>
+        }
+      </div>
+    </div>
+
+    <div class="grupo">
+      <h2>Necessidade</h2>
+      <div class="chips">
+        @for (n of necessidades; track n) {
+          <button type="button" class="chip" [class.ativo]="necessidadesSelecionadas.includes(n)"
+                  (click)="alternarNecessidade(n)">{{ n }}</button>
+        }
+      </div>
+    </div>
+
+    <div class="grupo">
+      <h2>Recursos</h2>
+      <div class="chips">
+        @for (r of recursos; track r) {
+          <button type="button" class="chip" [class.ativo]="recursosSelecionados.includes(r)"
+                  (click)="alternarRecurso(r)">{{ r }}</button>
+        }
+      </div>
+    </div>
+
+    <button type="button" class="limpar" (click)="limparFiltros()">Limpar filtros</button>
+  </div>
+
+  <!-- Mapa e resultados -->
+  <div class="conteudo">
+    <div class="area-mapa">
+      <app-city-map
+        [locais]="locaisFiltrados"
+        [selecionadoId]="selecionadoId"
+        (selecionar)="selecionarLocal($event)" />
+
+      <!-- Legenda das cores dos marcadores -->
+      <div class="legenda">
+        <span><i class="bolinha alto"></i> Score 70 ou mais</span>
+        <span><i class="bolinha medio"></i> 40 a 69</span>
+        <span><i class="bolinha baixo"></i> Abaixo de 40</span>
+      </div>
+    </div>
+
+    <div class="resultados">
+      <h2>
+        {{ locaisFiltrados.length }}
+        {{ locaisFiltrados.length === 1 ? 'local encontrado' : 'locais encontrados' }}
+      </h2>
+
+      @for (local of locaisFiltrados; track local.id) {
+        <div class="item" [class.destaque]="local.id === selecionadoId">
+          <app-place-card
+            [nome]="local.nome"
+            [categoria]="local.categoria"
+            [endereco]="local.endereco"
+            [score]="local.score"
+            [link]="'/local/' + local.id" />
+        </div>
+      } @empty {
+        <p class="vazio">Nenhum local atende a todos os filtros. Tente remover algum.</p>
+      }
+    </div>
+  </div>
+</section>

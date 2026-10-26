@@ -1,0 +1,13 @@
+<article class="place-card">
+  <div class="topo">
+    <div>
+      <h3>{{ nome }}</h3>
+      <span class="categoria">{{ categoria }}</span>
+    </div>
+    <app-score-badge [score]="score" />
+  </div>
+
+  <p class="endereco"><i class="bi bi-geo-alt"></i> {{ endereco }}</p>
+
+  <a class="btn-detalhes" [routerLink]="link">Ver detalhes</a>
+</article>

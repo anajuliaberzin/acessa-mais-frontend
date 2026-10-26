@@ -1,0 +1,31 @@
+<section class="pagina">
+  <a class="voltar" routerLink="/mapa"><i class="bi bi-arrow-left"></i> Voltar ao mapa</a>
+
+  @if (local) {
+    <article class="card">
+      <h1>{{ local.nome }}</h1>
+      <p class="sub">{{ local.categoria }} · {{ local.endereco }}, Sorocaba</p>
+      <app-score-badge [score]="local.score" />
+
+      <h2>Atende a</h2>
+      <div class="chips">
+        @for (n of local.necessidades; track n) {
+          <span class="chip">{{ n }}</span>
+        } @empty {
+          <span class="vazio">Nenhuma necessidade informada</span>
+        }
+      </div>
+
+      <h2>Recursos disponíveis</h2>
+      <div class="chips">
+        @for (r of local.recursos; track r) {
+          <span class="chip">{{ r }}</span>
+        } @empty {
+          <span class="vazio">Nenhum recurso informado</span>
+        }
+      </div>
+    </article>
+  } @else {
+    <p>Local não encontrado.</p>
+  }
+</section>

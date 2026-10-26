@@ -32,4 +32,22 @@ export const routes: Routes = [
     loadComponent: () => import('./perfil/perfil.component').then((m) => m.PerfilComponent),
     title: 'Meu perfil | ACESSA+',
   },
+  {
+    path: 'painel',
+    loadComponent: () =>
+      import('./painel-municipio/painel-municipio').then(
+        (m) => m.PainelMunicipio,
+      ),
+    title: 'Painel do município | ACESSA+',
+  },
+  {
+    path: 'mapa',
+    loadComponent: () => import('./mapa/mapa').then((m) => m.Mapa),
+    title: 'Mapa interativo | ACESSA+',
+  },
+  {
+    path: 'local/:id', // :id recebe o número do local
+    loadComponent: () => import('./detalhes-local/detalhes-local').then((m) => m.DetalhesLocal),
+    title: 'Detalhes do local | ACESSA+',
+  },
 ];

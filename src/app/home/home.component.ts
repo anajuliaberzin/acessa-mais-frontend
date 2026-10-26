@@ -21,6 +21,7 @@ import { AuthService } from '../auth/auth.service';
             <a routerLink="/rotas">Rotas</a>
             <a routerLink="/reportar">Reportar</a>
             <a routerLink="/perfil">Perfil</a>
+            <a routerLink="/painel">Painel</a>
             <a href="#admin">Admin</a>
             @if (auth.isAuthenticated()) {
               <button class="logout-btn" type="button" (click)="auth.logout()">Sair</button>

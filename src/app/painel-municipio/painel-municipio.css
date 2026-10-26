@@ -1,0 +1,127 @@
+.painel {
+  max-width: 1130px;
+  margin: 0 auto;
+  padding: 32px 16px 80px; 
+}
+
+.eyebrow {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #e3ebff;
+  color: #1e3a9f;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.painel-topo h1 {
+  font-family: 'Outfit', sans-serif;
+  color: #1a2340;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  margin: 16px 0 8px;
+}
+
+.destaque { 
+    color: #5141bb;
+}
+
+.painel-topo p { 
+    color: #4a5578; 
+}
+
+
+.card {
+  background: #fff;
+  border-radius: 26px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(60, 70, 140, 0.08);
+}
+
+.card h2 {
+  font-family: 'Outfit', sans-serif;
+  color: #1a2340;
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+}
+
+
+.kpis {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin: 28px 0;
+}
+.kpi { display: flex; flex-direction: column; gap: 4px; }
+.kpi-icone { color: #5141bb; font-size: 1.6rem; }
+.kpi-titulo { color: #4a5578; font-weight: 600; }
+.kpi-valor { font-family: 'Outfit', sans-serif; color: #1a2340; font-size: 2.2rem; }
+.kpi small { color: #7a84a3; }
+
+
+.graficos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+
+.linha {
+  display: grid;
+  grid-template-columns: 110px 1fr 28px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.linha-rotulo { color: #1a2340; font-size: 0.9rem; }
+.linha-trilho { background: #eef1fb; border-radius: 999px; height: 14px; }
+.linha-barra {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #4f5de8, #5141bb);
+}
+.linha-valor { font-weight: 700; color: #1a2340; text-align: right; }
+
+
+.colunas {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 8px;
+  height: 240px;
+}
+.coluna {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
+.coluna-barra { width: 100%; max-width: 56px; border-radius: 12px 12px 0 0; min-height: 4px; }
+.coluna-valor { font-weight: 700; color: #1a2340; }
+.coluna-rotulo { font-size: 0.8rem; color: #4a5578; }
+
+
+@media (min-width: 640px) {
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 992px) {
+  .kpis { grid-template-columns: repeat(4, 1fr); }
+  .graficos { grid-template-columns: 1fr 1fr; }
+  .painel { padding-bottom: 32px; }
+}
+
+.voltar {
+  display: flex;          
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: #5141bb;
+  font-weight: 600;
+  text-decoration: none;
+}
+.voltar:hover {
+  text-decoration: underline;
+}
