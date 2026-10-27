@@ -45,9 +45,4 @@ export const routes: Routes = [
     loadComponent: () => import('./mapa/mapa').then((m) => m.Mapa),
     title: 'Mapa interativo | ACESSA+',
   },
-  {
-    path: 'local/:id', // :id recebe o número do local
-    loadComponent: () => import('./detalhes-local/detalhes-local').then((m) => m.DetalhesLocal),
-    title: 'Detalhes do local | ACESSA+',
-  },
 ];
