@@ -1,8 +1,11 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
 import { adminGuard } from './auth/admin.guard';
+import { superadminGuard } from './auth/superadmin.guard';
 
 export const routes: Routes = [
+  { path: 'admin/locais/novo', canActivate: [superadminGuard], title: 'Cadastrar local | ACESSA+',
+    loadComponent: () => import('./locais/cadastrar-local.component').then(m => m.CadastrarLocalComponent) },
   { path: 'sobre', loadComponent: () => import('./sobre/sobre.component').then(m => m.SobreComponent), title: 'Quem somos nós | ACESSA+' },
   { path: 'cadastro', loadComponent: () => import('./auth/cadastro.component').then(m => m.CadastroComponent), title: 'Criar conta | ACESSA+' },
   {

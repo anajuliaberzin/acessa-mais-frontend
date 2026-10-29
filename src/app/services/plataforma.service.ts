@@ -31,6 +31,7 @@ export interface PerfilAtual {
   membroDesde: string;
   preferencias: string[];
   gestor: boolean;
+  superadmin?: boolean;
 }
 export interface MinhaAvaliacao {
   id: number;
@@ -82,6 +83,9 @@ export function rotuloStatus(status: string): string {
 
 @Injectable({ providedIn: 'root' })
 export class PlataformaService {
+  criarLocal(dados: unknown) {
+    return this.http.post<Local>(this.base + '/gestao/locais/', dados, { context: this.contexto() });
+  }
   perfil() {
     return this.http.get<PerfilAtual>(this.base + '/me/', { context: this.contexto() });
   }
