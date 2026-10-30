@@ -24,9 +24,6 @@ import { SessaoService } from '../auth/sessao.service';
           <i class="bi bi-list" aria-hidden="true"></i>
         </button>
         <nav id="main-nav" [class.is-open]="open()" aria-label="Navegação principal">
-          @if (sessao.perfil()?.superadmin) {
-            <a routerLink="/admin/locais/novo" routerLinkActive="active" (click)="open.set(false)">Cadastrar local</a>
-          }
           @for (item of links; track item.path) {
             @if (
               (item.path !== '/perfil' || auth.isAuthenticated()) &&

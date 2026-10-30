@@ -1,6 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { SessaoService } from '../auth/sessao.service';
 import { forkJoin } from 'rxjs';
 import {
   PlataformaService,
@@ -13,7 +15,7 @@ import { RegistroComponent } from '../ocorrencias/registro.component';
 import { TIPOS_PROBLEMA } from '../models/ocorrencia.model';
 
 @Component({
-  imports: [CommonModule, FormsModule, RegistroComponent],
+  imports: [CommonModule, FormsModule, RegistroComponent, RouterLink],
   template: `
     <main class="container dashboard py-5">
       <h1>Painel do município</h1>
@@ -21,6 +23,11 @@ import { TIPOS_PROBLEMA } from '../models/ocorrencia.model';
       @if (negado()) {
         <p role="alert">Acesso restrito aos gestores do município.</p>
       } @else {
+        @if (sessao.perfil()?.superadmin) {
+          <a class="btn btn-primary my-3" routerLink="/admin/locais/novo">
+            <i class="bi bi-plus-circle me-2" aria-hidden="true"></i>Cadastrar local
+          </a>
+        }
         <form class="card p-3 my-4" (ngSubmit)="filtrar()">
           <h2 class="h5">Filtrar ocorrências</h2>
           <div class="row g-3">
@@ -281,6 +288,7 @@ import { TIPOS_PROBLEMA } from '../models/ocorrencia.model';
   styleUrl: './painel.component.css',
 })
 export class PainelComponent {
+  readonly sessao = inject(SessaoService);
   percentual(valor: number, total: number) {
     return total > 0 ? (valor / total) * 100 : 0;
   }
