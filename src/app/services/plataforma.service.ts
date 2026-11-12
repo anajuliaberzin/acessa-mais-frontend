@@ -35,10 +35,21 @@ export interface PerfilAtual {
 }
 export interface MinhaAvaliacao {
   id: number;
+  local: number;
   nomeLocal: string;
   nota: number;
   comentario: string;
   created_at: string;
+}
+export interface AvaliacoesLocalResumo {
+  nota: number;
+  total: number;
+}
+export interface LocalMaisAvaliado {
+  id: number;
+  nome: string;
+  media_avaliacoes: number;
+  total_avaliacoes: number;
 }
 export interface Registro {
   id: number;
@@ -61,6 +72,11 @@ export interface Indicadores {
   por_tipo: { tipo_problema: string; total: number }[];
   evolucao: { dia: string; total: number }[];
   por_acessibilidade: { classificacao: string; total: number }[];
+  total_avaliacoes: number;
+  media_avaliacoes: number | null;
+  avaliacoes_por_nota: AvaliacoesLocalResumo[];
+  locais_mais_bem_avaliados: LocalMaisAvaliado[];
+  locais_menos_bem_avaliados: LocalMaisAvaliado[];
 }
 export const RECURSOS: Record<string, string> = {
   rampa: 'Rampa ou acesso sem degrau',
@@ -100,6 +116,34 @@ export class PlataformaService {
     return this.http.get<Pagina<MinhaAvaliacao>>(this.base + '/me/avaliacoes/', {
       context: this.contexto(),
       params: { page },
+    });
+  }
+  avaliacoesLocal(id: number) {
+    return this.http.get<Pagina<MinhaAvaliacao>>(`${this.base}/locais/${id}/avaliacoes/`);
+  }
+  minhaAvaliacaoLocal(id: number) {
+    return this.http.get<Pagina<MinhaAvaliacao>>(this.base + '/me/avaliacoes/', {
+      context: this.contexto(),
+      params: { local: id },
+    });
+  }
+  criarAvaliacao(local: number, nota: number, comentario: string) {
+    return this.http.post<MinhaAvaliacao>(
+      `${this.base}/locais/${local}/avaliacoes/`,
+      { nota, comentario },
+      { context: this.contexto() },
+    );
+  }
+  atualizarAvaliacao(id: number, nota: number, comentario: string) {
+    return this.http.patch<MinhaAvaliacao>(
+      `${this.base}/me/avaliacoes/${id}/`,
+      { nota, comentario },
+      { context: this.contexto() },
+    );
+  }
+  excluirAvaliacao(id: number) {
+    return this.http.delete<void>(`${this.base}/me/avaliacoes/${id}/`, {
+      context: this.contexto(),
     });
   }
   meusFavoritos(page: number, pageSize = 20) {

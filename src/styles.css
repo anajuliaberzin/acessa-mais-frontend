@@ -39,7 +39,7 @@ button, a, input, select, textarea { scroll-margin-block: 7rem; }
 html[data-contrast='high'] { --primary:#ffe65c; --ink:#fff; --muted:#eee; --line:#fff; --soft:#222; --surface:#111; --bs-body-color:#fff; --bs-secondary-color:#eee; --bs-body-bg:#111; --shadow:none; color-scheme:dark; }
 html[data-contrast='high'] body,
 html[data-contrast='high'] app-header .site-header,
-html[data-contrast='high'] #conteudo :is(main,section,article,form,fieldset,.surface,.card,.card-local,.hero-shell,.steps-band,.map-caption,.preferences-panel,.empty-state,.table-responsive,.perfil-tabs,.input-group-text) { background:#111!important; color:#fff!important; background-image:none!important; box-shadow:none!important; }
+html[data-contrast='high'] #conteudo :is(main,section,article,form,fieldset,.surface,.card,.card-local,.hero-shell,.steps-band,.map-caption,.preferences-panel,.empty-state,.table-responsive,.perfil-tabs,.input-group-text,.app-modal) { background:#111!important; color:#fff!important; background-image:none!important; box-shadow:none!important; }
 html[data-contrast='high'] :is(p,h1,h2,h3,h4,legend,label,small,output,figcaption,caption,td,th,summary),
 html[data-contrast='high'] #conteudo :is(span,strong,li),
 html[data-contrast='high'] app-header .brand { color:#fff!important; }

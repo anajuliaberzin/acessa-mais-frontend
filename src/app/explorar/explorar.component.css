@@ -228,6 +228,54 @@ fieldset label {
 .detail-actions {
   flex: 0 0 auto;
 }
+.login-modal-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+.login-modal-note i {
+  color: var(--primary);
+  font-size: 1rem;
+}
+.login-modal-actions {
+  display: flex;
+  flex: 1 1 100%;
+  flex-direction: column;
+  gap: 10px;
+}
+.create-account-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 46px;
+  padding: 11px 20px;
+  border: 1px solid #dcdafd;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f8f7ff, #f1f3ff);
+  color: var(--primary);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+.create-account-btn:hover {
+  border-color: #aaa7f3;
+  background: #eeedff;
+  color: #403bc6;
+  transform: translateY(-1px);
+}
+.create-account-btn:focus-visible {
+  outline: 3px solid #7975ef;
+  outline-offset: 3px;
+}
 .resource-list {
   list-style: none;
   padding: 0;

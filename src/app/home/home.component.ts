@@ -8,9 +8,11 @@ import { AuthService } from '../auth/auth.service';
 import { PlataformaService, Local, Pagina, RECURSOS } from '../services/plataforma.service';
 import { FavoritosService } from '../services/favoritos.service';
 import { finalize } from 'rxjs';
+import { AvaliacoesLocalComponent } from '../locais/avaliacoes-local.component';
+import { ModalComponent } from '../shared/modal.component';
 
 @Component({
-  selector: 'app-home', standalone: true, imports: [RouterLink, CommonModule, FormsModule, HomeFooterComponent],
+  selector: 'app-home', standalone: true, imports: [RouterLink, CommonModule, FormsModule, HomeFooterComponent, AvaliacoesLocalComponent, ModalComponent],
   templateUrl: './home.component.html', styleUrl: './home.component.css',
 })
 export class HomeComponent {
@@ -25,6 +27,7 @@ export class HomeComponent {
   readonly carregando = signal(false);
   readonly erro = signal('');
   readonly avisoFavorito = signal('');
+  readonly modalLoginFavorito = signal(false);
   readonly locaisSalvando = signal<ReadonlySet<number>>(new Set());
   nome = ''; categoria = ''; necessidade = ''; recurso = ''; destaque = true; numeroPagina = 1;
   private versao = 0;
@@ -48,10 +51,18 @@ export class HomeComponent {
   todos() { this.nome = this.categoria = this.necessidade = this.recurso = ''; this.buscar(); }
   mostrarDestaques() { this.nome = this.categoria = this.necessidade = this.recurso = ''; this.destaque = true; this.numeroPagina = 1; this.carregar(); }
   mudarPagina(delta: number) { this.numeroPagina += delta; this.carregar(); }
+  atualizarLocal(atualizado: Local) {
+    this.selecionado.set(atualizado);
+    this.pagina.update((pagina) =>
+      pagina
+        ? { ...pagina, results: pagina.results.map((local) => local.id === atualizado.id ? atualizado : local) }
+        : pagina,
+    );
+  }
   alternarFavorito(id: number) {
     this.avisoFavorito.set('');
     if (!this.favoritos.autenticado()) {
-      this.avisoFavorito.set('Entre na sua conta para salvar locais nos favoritos.');
+      this.modalLoginFavorito.set(true);
       return;
     }
     if (this.locaisSalvando().has(id)) return;

@@ -1,0 +1,95 @@
+<section class="local-reviews" aria-labelledby="reviews-title">
+  <h3 id="reviews-title">Avaliações dos usuários</h3>
+  <p class="review-summary">
+    @if (local.media_avaliacoes !== null && local.total_avaliacoes > 0) {
+      <strong>{{ local.media_avaliacoes | number: '1.1-1' }}/5</strong>
+      <span aria-hidden="true"> · </span>{{ local.total_avaliacoes }}
+      {{ local.total_avaliacoes === 1 ? 'avaliação' : 'avaliações' }}
+    } @else {
+      Este local ainda não recebeu avaliações.
+    }
+  </p>
+
+  @if (!autenticado()) {
+    <p class="login-prompt">
+      <a routerLink="/login">Entre na sua conta</a> para avaliar este local.
+    </p>
+  } @else {
+    <form (ngSubmit)="salvar()">
+      <fieldset [disabled]="salvando() || carregando()">
+        <legend>{{ minhaAvaliacao() ? 'Edite sua avaliação' : 'Deixe sua avaliação' }}</legend>
+        <div class="rating-options" role="radiogroup" aria-label="Nota de 1 a 5 estrelas">
+          @for (valor of [1, 2, 3, 4, 5]; track valor) {
+            <label>
+              <input
+                type="radio"
+                [name]="'nota-' + local.id"
+                [value]="valor"
+                [(ngModel)]="nota"
+                required
+              />
+              <span>{{ valor }} <i class="bi bi-star-fill" aria-hidden="true"></i></span>
+            </label>
+          }
+        </div>
+        <label class="comment-label" [for]="'comentario-' + local.id">Comentário (opcional)</label>
+        <textarea
+          [id]="'comentario-' + local.id"
+          name="comentario"
+          [(ngModel)]="comentario"
+          maxlength="3000"
+          rows="3"
+        ></textarea>
+      </fieldset>
+      <div class="review-actions">
+        <button class="secondary-btn" type="submit" [disabled]="salvando() || carregando()">
+          {{ salvando() ? 'Salvando…' : minhaAvaliacao() ? 'Atualizar avaliação' : 'Enviar avaliação' }}
+        </button>
+        @if (minhaAvaliacao()) {
+          <button class="delete-review" type="button" [disabled]="salvando() || carregando()" (click)="excluir()">
+            Excluir minha avaliação
+          </button>
+        }
+      </div>
+    </form>
+  }
+
+  @if (carregando()) {
+    <p role="status">Carregando avaliações…</p>
+  }
+  @if (erro()) {
+    <div role="alert">
+      <p>{{ erro() }}</p>
+      <button type="button" class="secondary-btn" (click)="carregar()">Tentar novamente</button>
+    </div>
+  }
+  @if (mensagem()) {
+    <p role="status">{{ mensagem() }}</p>
+  }
+  <div class="review-list" [attr.aria-busy]="carregando()">
+    @for (avaliacao of avaliacoes(); track avaliacao.id) {
+      <article class="review-item">
+        <p class="review-stars" [attr.aria-label]="avaliacao.nota + ' de 5 estrelas'">
+          @for (preenchida of estrelas(avaliacao.nota); track $index) {
+            <i
+              class="bi"
+              [class.bi-star-fill]="preenchida"
+              [class.bi-star]="!preenchida"
+              aria-hidden="true"
+            ></i>
+          }
+          <time [attr.datetime]="avaliacao.created_at">{{ avaliacao.created_at | date: 'dd/MM/yyyy' }}</time>
+        </p>
+        @if (avaliacao.comentario) {
+          <p class="review-comment">{{ avaliacao.comentario }}</p>
+        } @else {
+          <p class="review-comment review-no-comment">Avaliação sem comentário.</p>
+        }
+      </article>
+    } @empty {
+      @if (!carregando() && !erro()) {
+        <p class="empty-reviews">Nenhuma avaliação publicada.</p>
+      }
+    }
+  </div>
+</section>

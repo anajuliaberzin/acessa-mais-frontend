@@ -108,12 +108,7 @@
         </div>
       }
       @if (avisoFavorito()) {
-        <p role="status">
-          {{ avisoFavorito() }}
-          @if (!favoritos.autenticado()) {
-            <a routerLink="/login">Entrar na conta</a>
-          }
-        </p>
+        <p role="status">{{ avisoFavorito() }}</p>
       }
       <section [attr.aria-busy]="carregando()">
         @if (carregando()) {
@@ -230,6 +225,7 @@
               {{ local.total_avaliacoes }} avaliações
             </p>
           }
+          <app-avaliacoes-local [local]="local" (localAtualizado)="atualizarLocal($event)" />
           <a class="secondary-btn" routerLink="/reportar"
             ><i class="bi bi-exclamation-triangle" aria-hidden="true"></i>Reportar problema</a
           >
@@ -238,3 +234,28 @@
     </div>
   </div>
 </main>
+<app-modal
+  [open]="modalLoginFavorito()"
+  title="Entre para salvar seus favoritos"
+  description="Acesse sua conta para guardar este local e encontrá-lo facilmente depois."
+  icon="bi-heart"
+  (closed)="modalLoginFavorito.set(false)"
+>
+  <div class="login-modal-note">
+    <i class="bi bi-shield-check" aria-hidden="true"></i>
+    Seus favoritos ficam salvos com segurança no seu perfil.
+  </div>
+  <div modal-actions class="login-modal-actions">
+    <a class="primary-btn" routerLink="/login" (click)="modalLoginFavorito.set(false)">
+      Entrar na conta <i class="bi bi-arrow-right" aria-hidden="true"></i>
+    </a>
+    <a
+      class="create-account-btn"
+      routerLink="/cadastro"
+      (click)="modalLoginFavorito.set(false)"
+    >
+      <i class="bi bi-person-plus" aria-hidden="true"></i>
+      Criar uma conta
+    </a>
+  </div>
+</app-modal>

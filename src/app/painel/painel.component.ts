@@ -93,6 +93,19 @@ import { TIPOS_PROBLEMA } from '../models/ocorrencia.model';
                 <span>Locais sem nota</span><strong class="fs-2">{{ i.locais_sem_nota }}</strong>
               </div>
             </div>
+            <div class="col-md-3">
+              <div class="card p-3">
+                <span>Avaliações de usuários</span><strong class="fs-2">{{ i.total_avaliacoes }}</strong>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card p-3">
+                <span>Média das avaliações</span
+                ><strong class="fs-2">{{
+                  i.media_avaliacoes === null ? 'Sem dados' : (i.media_avaliacoes | number: '1.1-1') + '/5'
+                }}</strong>
+              </div>
+            </div>
           </div>
           <p>
             Os filtros acima afetam ocorrências. A acessibilidade mostra o cadastro atual de locais
@@ -203,6 +216,50 @@ import { TIPOS_PROBLEMA } from '../models/ocorrencia.model';
                 </div>
               } @empty {
                 <p class="chart-empty">Sem ocorrências para acompanhar.</p>
+              }
+            </section>
+            <section>
+              <h2>Avaliações por nota</h2>
+              @if (i.total_avaliacoes > 0) {
+                @for (item of i.avaliacoes_por_nota; track item.nota) {
+                  <div class="horizontal-row">
+                    <span>{{ item.nota }} {{ item.nota === 1 ? 'estrela' : 'estrelas' }}</span>
+                    <div class="bar-track">
+                      <div class="bar-fill" [style.width.%]="percentual(item.total, i.total_avaliacoes)"></div>
+                    </div>
+                    <strong>{{ item.total }}</strong>
+                  </div>
+                }
+              } @else {
+                <p class="chart-empty">Ainda não há avaliações de usuários.</p>
+              }
+            </section>
+            <section>
+              <h2>Locais mais bem avaliados</h2>
+              @for (item of i.locais_mais_bem_avaliados; track item.id; let idx = $index) {
+                <div class="rank-row">
+                  <span class="rank-number">{{ idx + 1 }}</span>
+                  <div class="rank-label">
+                    <span>{{ item.nome }} ({{ item.total_avaliacoes }})</span>
+                    <strong>{{ item.media_avaliacoes | number: '1.1-1' }}/5</strong>
+                  </div>
+                </div>
+              } @empty {
+                <p class="chart-empty">Ainda não há locais avaliados.</p>
+              }
+            </section>
+            <section>
+              <h2>Locais menos bem avaliados</h2>
+              @for (item of i.locais_menos_bem_avaliados; track item.id; let idx = $index) {
+                <div class="rank-row">
+                  <span class="rank-number">{{ idx + 1 }}</span>
+                  <div class="rank-label">
+                    <span>{{ item.nome }} ({{ item.total_avaliacoes }})</span>
+                    <strong>{{ item.media_avaliacoes | number: '1.1-1' }}/5</strong>
+                  </div>
+                </div>
+              } @empty {
+                <p class="chart-empty">Ainda não há locais avaliados.</p>
               }
             </section>
           </div>

@@ -1,0 +1,120 @@
+.local-reviews {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.local-reviews h3 {
+  font-size: 1rem;
+}
+.review-summary,
+.login-prompt,
+.review-item,
+.empty-reviews {
+  font-size: 0.8125rem;
+}
+.review-summary strong {
+  color: var(--ink);
+}
+.login-prompt a {
+  font-weight: 600;
+}
+.local-reviews form {
+  margin: 20px 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.local-reviews fieldset {
+  margin: 0;
+}
+.local-reviews legend,
+.comment-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.rating-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 16px;
+}
+.rating-options label {
+  cursor: pointer;
+}
+.rating-options input {
+  position: absolute;
+  opacity: 0;
+}
+.rating-options span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+}
+.rating-options input:checked + span {
+  color: #825900;
+  background: #fff6db;
+  border-color: #e6ca78;
+}
+.rating-options input:focus-visible + span {
+  outline: 3px solid #a6a3ed;
+  outline-offset: 2px;
+}
+.comment-label {
+  margin-bottom: 7px;
+}
+.local-reviews textarea {
+  width: 100%;
+  min-height: 84px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  resize: vertical;
+}
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+.delete-review {
+  border: 0;
+  background: transparent;
+  color: #a51f45;
+  font-size: 0.75rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.review-list {
+  display: grid;
+}
+.review-item {
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.review-stars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 7px;
+  color: #9a6a00;
+}
+.review-stars time {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.6875rem;
+}
+.review-comment {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.review-no-comment,
+.empty-reviews {
+  color: var(--muted);
+}
