@@ -121,6 +121,20 @@
     @if (carregando()) {
       <p role="status">Carregando locais…</p>
     }
+    @if (favoritos.erro()) {
+      <div role="alert">
+        <p>{{ favoritos.erro() }}</p>
+        <button type="button" (click)="favoritos.carregar()">Tentar novamente</button>
+      </div>
+    }
+    @if (avisoFavorito()) {
+      <p role="status">
+        {{ avisoFavorito() }}
+        @if (!favoritos.autenticado()) {
+          <a routerLink="/login">Entrar na conta</a>
+        }
+      </p>
+    }
     @if (!carregando() && !erro() && !pagina()?.count) {
       <p class="empty-state">
         {{
@@ -133,7 +147,20 @@
     <div class="places-grid">
       @for (local of pagina()?.results; track local.id) {
         <article class="place-card">
-          <h3>{{ local.nome }}</h3>
+          <div class="place-card-heading">
+            <h3>{{ local.nome }}</h3>
+            <button
+              class="favorite-btn"
+              type="button"
+              [class.is-favorite]="favoritos.ids().has(local.id)"
+              [attr.aria-pressed]="favoritos.ids().has(local.id)"
+              [attr.aria-label]="(favoritos.ids().has(local.id) ? 'Remover ' : 'Adicionar ') + local.nome + ' dos favoritos'"
+              [disabled]="favoritos.carregando() || locaisSalvando().has(local.id)"
+              (click)="alternarFavorito(local.id)"
+            >
+              <i class="bi" [class.bi-heart-fill]="favoritos.ids().has(local.id)" [class.bi-heart]="!favoritos.ids().has(local.id)" aria-hidden="true"></i>
+            </button>
+          </div>
           <p class="place-meta">{{ local.categoria }} · Sorocaba/SP</p>
           <p>{{ local.endereco }}</p>
           @if (local.acessibilidade.nota !== null) {
@@ -176,7 +203,20 @@
         tabindex="-1"
         id="info-local-painel"
       >
-        <h2 id="info-local">{{ local.nome }}</h2>
+        <div class="place-detail-heading">
+          <h2 id="info-local">{{ local.nome }}</h2>
+          <button
+            class="favorite-btn"
+            type="button"
+            [class.is-favorite]="favoritos.ids().has(local.id)"
+            [attr.aria-pressed]="favoritos.ids().has(local.id)"
+            [attr.aria-label]="(favoritos.ids().has(local.id) ? 'Remover ' : 'Adicionar ') + local.nome + ' dos favoritos'"
+            [disabled]="favoritos.carregando() || locaisSalvando().has(local.id)"
+            (click)="alternarFavorito(local.id)"
+          >
+            <i class="bi" [class.bi-heart-fill]="favoritos.ids().has(local.id)" [class.bi-heart]="!favoritos.ids().has(local.id)" aria-hidden="true"></i>
+          </button>
+        </div>
         <p>{{ local.endereco }}</p>
         <p data-read-aloud>{{ local.descricao }}</p>
         @for (foto of local.fotos; track foto.id) {

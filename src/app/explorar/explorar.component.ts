@@ -13,7 +13,9 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import * as L from 'leaflet';
+import { finalize } from 'rxjs';
 import { Local, Pagina, PlataformaService, RECURSOS } from '../services/plataforma.service';
+import { FavoritosService } from '../services/favoritos.service';
 
 @Component({
   imports: [CommonModule, FormsModule, RouterLink],
@@ -22,6 +24,7 @@ import { Local, Pagina, PlataformaService, RECURSOS } from '../services/platafor
 })
 export class ExplorarComponent implements AfterViewInit, OnDestroy {
   private readonly api = inject(PlataformaService);
+  readonly favoritos = inject(FavoritosService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   @ViewChild('mapa') mapa!: ElementRef<HTMLDivElement>;
@@ -30,6 +33,8 @@ export class ExplorarComponent implements AfterViewInit, OnDestroy {
   readonly selecionado = signal<Local | null>(null);
   readonly carregando = signal(false);
   readonly erro = signal('');
+  readonly avisoFavorito = signal('');
+  readonly locaisSalvando = signal<ReadonlySet<number>>(new Set());
   readonly recursos = RECURSOS;
   readonly necessidades = [
     { id: 'mobilidade', nome: 'Mobilidade' },
@@ -87,6 +92,32 @@ export class ExplorarComponent implements AfterViewInit, OnDestroy {
   mudar(delta: number) {
     this.numero += delta;
     this.carregar();
+  }
+  alternarFavorito(id: number) {
+    this.avisoFavorito.set('');
+    if (!this.favoritos.autenticado()) {
+      this.avisoFavorito.set('Entre na sua conta para salvar locais nos favoritos.');
+      return;
+    }
+    if (this.locaisSalvando().has(id)) return;
+    this.locaisSalvando.update((ids) => new Set(ids).add(id));
+    const remover = this.favoritos.ids().has(id);
+    (remover ? this.favoritos.remover(id) : this.favoritos.adicionar(id))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() =>
+          this.locaisSalvando.update((ids) => {
+            const atualizados = new Set(ids);
+            atualizados.delete(id);
+            return atualizados;
+          }),
+        ),
+      )
+      .subscribe({
+        next: () =>
+          this.avisoFavorito.set(remover ? 'Local removido dos favoritos.' : 'Local adicionado aos favoritos.'),
+        error: () => this.avisoFavorito.set('Não foi possível atualizar o favorito. Tente novamente.'),
+      });
   }
   carregar() {
     const version = ++this.versao;

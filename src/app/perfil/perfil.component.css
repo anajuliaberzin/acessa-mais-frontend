@@ -92,6 +92,23 @@
   padding: 20px;
   box-shadow: var(--shadow);
 }
+.favorite-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #f0b8c8;
+  border-radius: 999px;
+  background: #fff3f6;
+  color: #a51f45;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+.favorite-remove-btn:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
 .card-local h3 {
   font-size: 0.875rem;
 }

@@ -219,6 +219,38 @@ h1 span {
 .place-card {
   padding: 20px;
 }
+.place-card-heading,
+.place-detail-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.place-card-heading h3,
+.place-detail-heading h2 {
+  min-width: 0;
+}
+.favorite-btn {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: white;
+  color: var(--muted);
+}
+.favorite-btn.is-favorite {
+  color: #c62850;
+  border-color: #f0b8c8;
+  background: #fff3f6;
+}
+.favorite-btn:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
 .place-card h3 {
   font-size: 1rem;
 }

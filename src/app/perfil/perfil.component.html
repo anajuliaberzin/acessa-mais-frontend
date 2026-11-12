@@ -61,7 +61,7 @@
       [attr.aria-pressed]="abaAtiva() === 'favoritos'"
       (click)="selecionarAba('favoritos')"
     >
-      Locais favoritos
+      Meus Favoritos
     </button>
   </nav>
   <section  [attr.aria-busy]="carregando()">
@@ -107,9 +107,24 @@
         <a class="secondary-btn" routerLink="/ocorrencias">Acompanhar protocolos e histórico</a>
       }
       @if (abaAtiva() === 'favoritos') {
+        <h2 class="h5">Meus Favoritos</h2>
+        @if (erroFavorito()) {
+          <p role="alert">{{ erroFavorito() }}</p>
+        }
         @for (f of favoritos(); track f.id) {
           <article class="card-local mb-3">
-            <h3>{{ f.nome }}</h3>
+            <div class="d-flex justify-content-between align-items-start gap-2">
+              <h3>{{ f.nome }}</h3>
+              <button
+                type="button"
+                class="favorite-remove-btn"
+                [disabled]="favoritosSalvando().has(f.id)"
+                [attr.aria-label]="'Remover ' + f.nome + ' dos favoritos'"
+                (click)="removerFavorito(f)"
+              >
+                <i class="bi bi-heart-fill" aria-hidden="true"></i> Remover favorito
+              </button>
+            </div>
             <p class="small">{{ f.endereco }}</p>
             <span class="score-badge" [attr.data-level]="f.acessibilidade.classificacao">{{
               f.acessibilidade.nota === null

@@ -58,6 +58,7 @@ export class AuthService {
   logout() {
     this.version++;
     this.tokens.set(null);
+    this.sessionId.update((id) => id + 1);
     this.refreshRequest = undefined;
     void this.router.navigate(['/home']);
   }
@@ -65,6 +66,7 @@ export class AuthService {
   expireSession() {
     this.version++;
     this.tokens.set(null);
+    this.sessionId.update((id) => id + 1);
     this.refreshRequest = undefined;
     void this.router.navigate(['/login'], { queryParams: { expired: '1' } });
   }

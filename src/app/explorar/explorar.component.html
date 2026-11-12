@@ -101,6 +101,20 @@
           <span>{{ p.count }} locais encontrados</span>
         }
       </div>
+      @if (favoritos.erro()) {
+        <div class="empty-state" role="alert">
+          <p>{{ favoritos.erro() }}</p>
+          <button class="secondary-btn" type="button" (click)="favoritos.carregar()">Tentar novamente</button>
+        </div>
+      }
+      @if (avisoFavorito()) {
+        <p role="status">
+          {{ avisoFavorito() }}
+          @if (!favoritos.autenticado()) {
+            <a routerLink="/login">Entrar na conta</a>
+          }
+        </p>
+      }
       <section [attr.aria-busy]="carregando()">
         @if (carregando()) {
           <p class="empty-state" role="status">Buscando locais em Sorocaba…</p>
@@ -122,7 +136,20 @@
         <div class="results-grid">
           @for (local of pagina()?.results; track local.id) {
             <article class="result-card surface">
-              <h3>{{ local.nome }}</h3>
+              <div class="result-card-heading">
+                <h3>{{ local.nome }}</h3>
+                <button
+                  class="favorite-btn"
+                  type="button"
+                  [class.is-favorite]="favoritos.ids().has(local.id)"
+                  [attr.aria-pressed]="favoritos.ids().has(local.id)"
+                  [attr.aria-label]="(favoritos.ids().has(local.id) ? 'Remover ' : 'Adicionar ') + local.nome + ' dos favoritos'"
+                  [disabled]="favoritos.carregando() || locaisSalvando().has(local.id)"
+                  (click)="alternarFavorito(local.id)"
+                >
+                  <i class="bi" [class.bi-heart-fill]="favoritos.ids().has(local.id)" [class.bi-heart]="!favoritos.ids().has(local.id)" aria-hidden="true"></i>
+                </button>
+              </div>
               <p>{{ local.categoria }} · {{ local.endereco }}</p>
               <span class="score-badge" [attr.data-level]="local.acessibilidade.classificacao">{{
                 local.acessibilidade.nota === null
@@ -156,13 +183,22 @@
         <section id="explore-detail" tabindex="-1" class="detail surface">
           <div class="results-heading">
             <h2>{{ local.nome }}</h2>
-            <button
-              class="close-detail"
-              (click)="fechar()"
-              aria-label="Fechar detalhes"
-            >
-              <i class="bi bi-x-lg" aria-hidden="true"></i>
-            </button>
+            <div class="detail-actions">
+              <button
+                class="favorite-btn"
+                type="button"
+                [class.is-favorite]="favoritos.ids().has(local.id)"
+                [attr.aria-pressed]="favoritos.ids().has(local.id)"
+                [attr.aria-label]="(favoritos.ids().has(local.id) ? 'Remover ' : 'Adicionar ') + local.nome + ' dos favoritos'"
+                [disabled]="favoritos.carregando() || locaisSalvando().has(local.id)"
+                (click)="alternarFavorito(local.id)"
+              >
+                <i class="bi" [class.bi-heart-fill]="favoritos.ids().has(local.id)" [class.bi-heart]="!favoritos.ids().has(local.id)" aria-hidden="true"></i>
+              </button>
+              <button class="close-detail" (click)="fechar()" aria-label="Fechar detalhes">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+              </button>
+            </div>
           </div>
           <p>{{ local.endereco }}</p>
           <p data-read-aloud>{{ local.descricao }}</p>
