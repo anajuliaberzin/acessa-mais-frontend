@@ -42,6 +42,8 @@ describe('Explorar locais', () => {
       ],
     });
     const fixture = TestBed.createComponent(ExplorarComponent);
+    fixture.componentInstance.alternarFavorito(21);
+    expect(fixture.componentInstance.modalLoginFavorito()).toBe(true);
     expect(locais).toHaveBeenLastCalledWith(
       expect.objectContaining({
         categoria: 'hospital',

@@ -16,9 +16,11 @@ import * as L from 'leaflet';
 import { finalize } from 'rxjs';
 import { Local, Pagina, PlataformaService, RECURSOS } from '../services/plataforma.service';
 import { FavoritosService } from '../services/favoritos.service';
+import { AvaliacoesLocalComponent } from '../locais/avaliacoes-local.component';
+import { ModalComponent } from '../shared/modal.component';
 
 @Component({
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, AvaliacoesLocalComponent, ModalComponent],
   templateUrl: './explorar.component.html',
   styleUrl: './explorar.component.css',
 })
@@ -34,6 +36,7 @@ export class ExplorarComponent implements AfterViewInit, OnDestroy {
   readonly carregando = signal(false);
   readonly erro = signal('');
   readonly avisoFavorito = signal('');
+  readonly modalLoginFavorito = signal(false);
   readonly locaisSalvando = signal<ReadonlySet<number>>(new Set());
   readonly recursos = RECURSOS;
   readonly necessidades = [
@@ -93,10 +96,18 @@ export class ExplorarComponent implements AfterViewInit, OnDestroy {
     this.numero += delta;
     this.carregar();
   }
+  atualizarLocal(atualizado: Local) {
+    this.selecionado.set(atualizado);
+    this.pagina.update((pagina) =>
+      pagina
+        ? { ...pagina, results: pagina.results.map((local) => local.id === atualizado.id ? atualizado : local) }
+        : pagina,
+    );
+  }
   alternarFavorito(id: number) {
     this.avisoFavorito.set('');
     if (!this.favoritos.autenticado()) {
-      this.avisoFavorito.set('Entre na sua conta para salvar locais nos favoritos.');
+      this.modalLoginFavorito.set(true);
       return;
     }
     if (this.locaisSalvando().has(id)) return;
@@ -169,6 +180,7 @@ export class ExplorarComponent implements AfterViewInit, OnDestroy {
       L.marker([local.latitude, local.longitude], {
         icon: L.divIcon({
           className: 'map-dot ' + classe,
+          html: '<span class="map-pin-motion" aria-hidden="true"></span>',
           iconSize: [24, 24],
           iconAnchor: [12, 12],
         }),

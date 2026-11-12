@@ -108,16 +108,11 @@
         </div>
       }
       @if (avisoFavorito()) {
-        <p role="status">
-          {{ avisoFavorito() }}
-          @if (!favoritos.autenticado()) {
-            <a routerLink="/login">Entrar na conta</a>
-          }
-        </p>
+        <p role="status">{{ avisoFavorito() }}</p>
       }
       <section [attr.aria-busy]="carregando()">
         @if (carregando()) {
-          <p class="empty-state" role="status">Buscando locais em Sorocaba…</p>
+          <p class="visually-hidden" role="status">Buscando locais em Sorocaba…</p>
         }
         @if (erro()) {
           <div class="empty-state" role="alert">
@@ -134,7 +129,13 @@
           </div>
         }
         <div class="results-grid">
-          @for (local of pagina()?.results; track local.id) {
+          @if (carregando()) {
+            @for (skeleton of [1, 2, 3, 4, 5, 6]; track skeleton) {
+              <div class="result-skeleton" aria-hidden="true"></div>
+            }
+          } @else {
+          @for (local of pagina()?.results; track local.id; let i = $index) {
+            <div class="result-card-reveal reveal" [style.--i]="i">
             <article class="result-card surface">
               <div class="result-card-heading">
                 <h3>{{ local.nome }}</h3>
@@ -160,9 +161,16 @@
               }}</span>
               <button class="secondary-btn" (click)="abrir(local)" [attr.aria-label]="'Ver informações de ' + local.nome">Ver informações</button>
             </article>
+            </div>
+          }
           }
         </div>
       </section>
+      @if (!carregando()) {
+        @if (pagina(); as p) {
+          <p class="visually-hidden" aria-live="polite" aria-atomic="true">{{ p.results.length }} locais carregados.</p>
+        }
+      }
       @if (pagina(); as p) {
         @if (p.next || p.previous) {
           <nav class="pagination" aria-label="Paginação dos locais">
@@ -230,11 +238,40 @@
               {{ local.total_avaliacoes }} avaliações
             </p>
           }
-          <a class="secondary-btn" routerLink="/reportar"
-            ><i class="bi bi-exclamation-triangle" aria-hidden="true"></i>Reportar problema</a
-          >
+          <app-avaliacoes-local [local]="local" (localAtualizado)="atualizarLocal($event)" />
+          <div class="detail-footer-actions">
+            <a class="secondary-btn" routerLink="/reportar">
+              <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+              Reportar problema
+            </a>
+          </div>
         </section>
       }
     </div>
   </div>
 </main>
+<app-modal
+  [open]="modalLoginFavorito()"
+  title="Entre para salvar seus favoritos"
+  description="Acesse sua conta para guardar este local e encontrá-lo facilmente depois."
+  icon="bi-heart"
+  (closed)="modalLoginFavorito.set(false)"
+>
+  <div class="login-modal-note">
+    <i class="bi bi-shield-check" aria-hidden="true"></i>
+    Seus favoritos ficam salvos com segurança no seu perfil.
+  </div>
+  <div modal-actions class="login-modal-actions">
+    <a class="primary-btn" routerLink="/login" (click)="modalLoginFavorito.set(false)">
+      Entrar na conta <i class="bi bi-arrow-right" aria-hidden="true"></i>
+    </a>
+    <a
+      class="create-account-btn"
+      routerLink="/cadastro"
+      (click)="modalLoginFavorito.set(false)"
+    >
+      <i class="bi bi-person-plus" aria-hidden="true"></i>
+      Criar uma conta
+    </a>
+  </div>
+</app-modal>

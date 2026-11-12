@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChild, inject, signal } from '@angular/core';
 import { AccessibilityService } from './accessibility.service';
+import { MotionService } from './motion.service';
 import { SpeechService } from './speech.service';
 
 @Component({
@@ -11,6 +12,25 @@ import { SpeechService } from './speech.service';
         <div class="panel-heading"><h2 id="accessibility-title">Acessibilidade</h2><button type="button" (click)="close()" aria-label="Fechar opções de acessibilidade">×</button></div>
         <fieldset><legend>Tamanho do texto</legend><div class="font-controls"><button type="button" (click)="preferences.resize(-25)" [disabled]="preferences.scale() === 100" aria-label="Diminuir fonte">A−</button><output aria-live="polite">{{ preferences.scale() }}%</output><button type="button" (click)="preferences.resize(25)" [disabled]="preferences.scale() === 200" aria-label="Aumentar fonte">A+</button></div></fieldset>
         <button class="wide" type="button" (click)="preferences.toggleContrast()" [attr.aria-pressed]="preferences.contrast()">Alto contraste <span>{{ preferences.contrast() ? 'ativado' : 'desativado' }}</span></button>
+        <fieldset class="motion-settings">
+          <label for="reduce-motion">Reduzir animações</label>
+          <input
+            id="reduce-motion"
+            type="checkbox"
+            role="switch"
+            [checked]="motion.userReduced()"
+            [attr.aria-describedby]="'motion-help'"
+            (change)="toggleMotion()"
+          />
+          <p id="motion-help">
+            @if (motion.systemReduced()) {
+              Seu sistema operacional já solicita movimento reduzido.
+            } @else {
+              Seu sistema operacional não solicita movimento reduzido.
+            }
+          </p>
+          <p class="visually-hidden" aria-live="polite" aria-atomic="true">{{ motionMessage() }}</p>
+        </fieldset>
         <button class="wide" type="button" (click)="reset()">Restaurar configurações padrão</button>
         <fieldset><legend>Leitura em voz alta</legend>
           <p>Leitura opcional dos títulos e textos principais, usando uma voz local em português. Não substitui seu leitor de tela.</p>
@@ -30,11 +50,14 @@ import { SpeechService } from './speech.service';
 })
 export class AccessibilityPanelComponent {
   readonly preferences = inject(AccessibilityService);
+  readonly motion = inject(MotionService);
   readonly speech = inject(SpeechService);
   readonly open = signal(false);
+  readonly motionMessage = signal('');
   @ViewChild('trigger') trigger!: ElementRef<HTMLButtonElement>;
   @ViewChild('panel') panel?: ElementRef<HTMLElement>;
   toggle(){this.open.update(value=>!value);if(this.open())setTimeout(()=>this.panel?.nativeElement.querySelector<HTMLButtonElement>('button')?.focus());}
   close(event?: Event){event?.preventDefault();event?.stopPropagation();this.open.set(false);this.trigger.nativeElement.focus();}
-  reset(){this.preferences.reset();this.speech.stop();}
+  toggleMotion(){this.motion.toggle();this.motionMessage.set(this.motion.reduced() ? 'Animações reduzidas.' : 'Animações ativadas.');}
+  reset(){this.preferences.reset();this.motion.reset();this.motionMessage.set(this.motion.reduced() ? 'Animações reduzidas.' : 'Animações ativadas.');this.speech.stop();}
 }

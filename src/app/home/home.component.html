@@ -1,11 +1,11 @@
 <main class="landing-page">
   <section class="hero-shell">
     <div class="hero-content" id="inicio">
-      <span class="eyebrow">Acessibilidade urbana em Sorocaba/SP</span>
-      <h1>Encontre lugares que <span>realmente</span> são acessíveis.</h1>
+      <span class="eyebrow reveal" style="--i: 0">Acessibilidade urbana em Sorocaba/SP</span>
+      <h1 class="reveal" style="--i: 1">Encontre lugares que <span>realmente</span> são acessíveis.</h1>
 
-      <p class="hero-copy" data-read-aloud>Descubra locais, rotas e informações de acessibilidade em Sorocaba.</p>
-      <form (ngSubmit)="buscar()">
+      <p class="hero-copy reveal" style="--i: 2" data-read-aloud>Descubra locais, rotas e informações de acessibilidade em Sorocaba.</p>
+      <form class="reveal" style="--i: 3" (ngSubmit)="buscar()">
         <label class="search-label" for="search">O que você está procurando?</label>
         <div class="search-row">
           <div class="search-box">
@@ -20,19 +20,21 @@
           <button class="primary-btn" type="submit">Buscar</button>
         </div>
       </form>
-      <div class="chips" aria-label="Atalhos por categoria">
+      <div class="chips reveal" style="--i: 4" role="group" aria-label="Filtrar locais por categoria">
         @for (item of categorias(); track item) {
-          <a routerLink="/explorar" [queryParams]="{ categoria: item }">{{ item }}</a>
+          <button type="button" [attr.aria-pressed]="categoria === item" (click)="selecionarCategoria(item)">
+            {{ item }} @if (categoria === item) {<i class="bi bi-check-lg" aria-hidden="true"></i>}
+          </button>
         }
         @if (!categorias().length) {
-          <a routerLink="/explorar" [queryParams]="{ categoria: 'restaurante' }">Restaurantes</a
-          ><a routerLink="/explorar" [queryParams]="{ categoria: 'hospital' }">Hospitais</a
-          ><a routerLink="/explorar" [queryParams]="{ categoria: 'shopping' }">Shopping</a
-          ><a routerLink="/explorar" [queryParams]="{ categoria: 'parque' }">Parques</a
-          ><a routerLink="/explorar" [queryParams]="{ categoria: 'comércio' }">Comércio</a>
+          @for (item of categoriasRapidas; track item.valor) {
+            <button type="button" [attr.aria-pressed]="categoria === item.valor" (click)="selecionarCategoria(item.valor)">
+              {{ item.nome }} @if (categoria === item.valor) {<i class="bi bi-check-lg" aria-hidden="true"></i>}
+            </button>
+          }
         }
       </div>
-      <div class="hero-actions">
+      <div class="hero-actions reveal" style="--i: 5">
         <a routerLink="/explorar" class="primary-btn"
           ><i class="bi bi-map" aria-hidden="true"></i>Explorar mapa</a
         ><a routerLink="/reportar" class="secondary-btn"
@@ -128,12 +130,7 @@
       </div>
     }
     @if (avisoFavorito()) {
-      <p role="status">
-        {{ avisoFavorito() }}
-        @if (!favoritos.autenticado()) {
-          <a routerLink="/login">Entrar na conta</a>
-        }
-      </p>
+      <p role="status">{{ avisoFavorito() }}</p>
     }
     @if (!carregando() && !erro() && !pagina()?.count) {
       <p class="empty-state">
@@ -145,7 +142,13 @@
       </p>
     }
     <div class="places-grid">
-      @for (local of pagina()?.results; track local.id) {
+      @if (carregando()) {
+        @for (skeleton of [1, 2, 3]; track skeleton) {
+          <div class="place-skeleton" aria-hidden="true"></div>
+        }
+      } @else {
+        @for (local of pagina()?.results; track local.id; let i = $index) {
+        <div class="place-card-reveal reveal" [style.--i]="i">
         <article class="place-card">
           <div class="place-card-heading">
             <h3>{{ local.nome }}</h3>
@@ -187,8 +190,13 @@
           }
           <button class="secondary-btn" (click)="abrir(local)" [attr.aria-label]="'Ver informações de ' + local.nome">Ver informações</button>
         </article>
+        </div>
+        }
       }
     </div>
+    @if (!carregando() && pagina(); as p) {
+      <p class="visually-hidden" aria-live="polite" aria-atomic="true">{{ p.results.length }} locais carregados.</p>
+    }
     @if (pagina(); as p) {
       <div class="chips pagination">
         <button [disabled]="!p.previous || carregando()" (click)="mudarPagina(-1)">Anterior</button
@@ -198,7 +206,7 @@
     }
     @if (selecionado(); as local) {
       <section
-        class="place-card mt-4"
+        class="place-card home-place-detail mt-4"
         aria-labelledby="info-local"
         tabindex="-1"
         id="info-local-painel"
@@ -229,10 +237,44 @@
             <figcaption>{{ foto.legenda }}</figcaption>
           </figure>
         }
-        <a routerLink="/reportar">Reportar problema</a> ·
-        <button (click)="fechar()">Fechar informações</button>
+        <app-avaliacoes-local [local]="local" (localAtualizado)="atualizarLocal($event)" />
+        <div class="place-detail-actions">
+          <a class="secondary-btn" routerLink="/reportar">
+            <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+            Reportar problema
+          </a>
+          <button class="secondary-btn" type="button" (click)="fechar()">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+            Fechar informações
+          </button>
+        </div>
       </section>
     }
   </section>
   <app-home-footer />
+  <app-modal
+    [open]="modalLoginFavorito()"
+    title="Entre para salvar seus favoritos"
+    description="Acesse sua conta para guardar este local e encontrá-lo facilmente depois."
+    icon="bi-heart"
+    (closed)="modalLoginFavorito.set(false)"
+  >
+    <div class="login-modal-note">
+      <i class="bi bi-shield-check" aria-hidden="true"></i>
+      Seus favoritos ficam salvos com segurança no seu perfil.
+    </div>
+    <div modal-actions class="login-modal-actions">
+      <a class="primary-btn" routerLink="/login" (click)="modalLoginFavorito.set(false)">
+        Entrar na conta <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+      <a
+        class="create-account-btn"
+        routerLink="/cadastro"
+        (click)="modalLoginFavorito.set(false)"
+      >
+        <i class="bi bi-person-plus" aria-hidden="true"></i>
+        Criar uma conta
+      </a>
+    </div>
+  </app-modal>
 </main>
