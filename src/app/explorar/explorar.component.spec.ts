@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { of, Subject } from 'rxjs';
+import { signal } from '@angular/core';
 import { ExplorarComponent } from './explorar.component';
 import { Local, Pagina, PlataformaService } from '../services/plataforma.service';
+import { FavoritosService } from '../services/favoritos.service';
 
 describe('Explorar locais', () => {
   const resposta = (): Pagina<Local> => ({ count: 0, next: null, previous: null, results: [] });
@@ -14,6 +16,16 @@ describe('Explorar locais', () => {
         {
           provide: PlataformaService,
           useValue: { filtros: () => of({ categorias: ['hospital'] }), locais },
+        },
+        {
+          provide: FavoritosService,
+          useValue: {
+            ids: signal(new Set<number>()),
+            carregando: signal(false),
+            erro: signal(''),
+            autenticado: signal(false),
+            carregar: vi.fn(),
+          },
         },
         {
           provide: ActivatedRoute,
@@ -55,6 +67,16 @@ describe('Explorar locais', () => {
       providers: [
         provideRouter([]),
         { provide: PlataformaService, useValue: { filtros: () => of({ categorias: [] }), locais } },
+        {
+          provide: FavoritosService,
+          useValue: {
+            ids: signal(new Set<number>()),
+            carregando: signal(false),
+            erro: signal(''),
+            autenticado: signal(false),
+            carregar: vi.fn(),
+          },
+        },
         { provide: ActivatedRoute, useValue: { queryParamMap: of(convertToParamMap({})) } },
       ],
     });

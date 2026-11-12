@@ -157,6 +157,37 @@ fieldset label {
     border-color 0.15s,
     box-shadow 0.15s;
 }
+.result-card-heading,
+.detail-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.result-card-heading h3 {
+  min-width: 0;
+}
+.favorite-btn {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: white;
+  color: var(--muted);
+}
+.favorite-btn.is-favorite {
+  color: #c62850;
+  border-color: #f0b8c8;
+  background: #fff3f6;
+}
+.favorite-btn:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
 .result-card:hover {
   border-color: #a7a3ef;
   box-shadow: 0 6px 24px #4e4be512;
@@ -193,6 +224,9 @@ fieldset label {
   border-radius: 50%;
   width: 36px;
   height: 36px;
+}
+.detail-actions {
+  flex: 0 0 auto;
 }
 .resource-list {
   list-style: none;

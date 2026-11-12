@@ -6,6 +6,8 @@ import { HomeFooterComponent } from './home-footer.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../auth/auth.service';
 import { PlataformaService, Local, Pagina, RECURSOS } from '../services/plataforma.service';
+import { FavoritosService } from '../services/favoritos.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-home', standalone: true, imports: [RouterLink, CommonModule, FormsModule, HomeFooterComponent],
@@ -14,6 +16,7 @@ import { PlataformaService, Local, Pagina, RECURSOS } from '../services/platafor
 export class HomeComponent {
   readonly auth = inject(AuthService);
   private readonly api = inject(PlataformaService);
+  readonly favoritos = inject(FavoritosService);
   private readonly destroyRef = inject(DestroyRef);
   readonly recursos = RECURSOS;
   readonly categorias = signal<string[]>([]);
@@ -21,6 +24,8 @@ export class HomeComponent {
   readonly selecionado = signal<Local | null>(null);
   readonly carregando = signal(false);
   readonly erro = signal('');
+  readonly avisoFavorito = signal('');
+  readonly locaisSalvando = signal<ReadonlySet<number>>(new Set());
   nome = ''; categoria = ''; necessidade = ''; recurso = ''; destaque = true; numeroPagina = 1;
   private versao = 0;
   constructor() {
@@ -43,6 +48,32 @@ export class HomeComponent {
   todos() { this.nome = this.categoria = this.necessidade = this.recurso = ''; this.buscar(); }
   mostrarDestaques() { this.nome = this.categoria = this.necessidade = this.recurso = ''; this.destaque = true; this.numeroPagina = 1; this.carregar(); }
   mudarPagina(delta: number) { this.numeroPagina += delta; this.carregar(); }
+  alternarFavorito(id: number) {
+    this.avisoFavorito.set('');
+    if (!this.favoritos.autenticado()) {
+      this.avisoFavorito.set('Entre na sua conta para salvar locais nos favoritos.');
+      return;
+    }
+    if (this.locaisSalvando().has(id)) return;
+    this.locaisSalvando.update((ids) => new Set(ids).add(id));
+    const remover = this.favoritos.ids().has(id);
+    (remover ? this.favoritos.remover(id) : this.favoritos.adicionar(id))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() =>
+          this.locaisSalvando.update((ids) => {
+            const atualizados = new Set(ids);
+            atualizados.delete(id);
+            return atualizados;
+          }),
+        ),
+      )
+      .subscribe({
+        next: () =>
+          this.avisoFavorito.set(remover ? 'Local removido dos favoritos.' : 'Local adicionado aos favoritos.'),
+        error: () => this.avisoFavorito.set('Não foi possível atualizar o favorito. Tente novamente.'),
+      });
+  }
   private acionador: HTMLElement | null = null;
   fechar() { this.selecionado.set(null); this.acionador?.focus(); }
   abrir(local: Local) { this.acionador = document.activeElement as HTMLElement; this.selecionado.set(local); setTimeout(() => document.getElementById('info-local-painel')?.focus()); }

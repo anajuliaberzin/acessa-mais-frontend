@@ -3,6 +3,7 @@ import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PREFERENCIAS_DISPONIVEIS } from '../models/perfil.model';
+import { FavoritosService } from '../services/favoritos.service';
 import {
   Local,
   MinhaAvaliacao,
@@ -13,6 +14,7 @@ import {
   rotuloStatus,
 } from '../services/plataforma.service';
 import { SessaoService } from '../auth/sessao.service';
+import { finalize } from 'rxjs';
 
 type Aba = 'avaliacoes' | 'ocorrencias' | 'favoritos';
 @Component({
@@ -24,6 +26,7 @@ type Aba = 'avaliacoes' | 'ocorrencias' | 'favoritos';
 export class PerfilComponent {
   private readonly api = inject(PlataformaService);
   private readonly sessao = inject(SessaoService);
+  readonly servicoFavoritos = inject(FavoritosService);
   private readonly destroyRef = inject(DestroyRef);
   readonly preferenciasDisponiveis = PREFERENCIAS_DISPONIVEIS;
   readonly usuario = signal<PerfilAtual | null>(null);
@@ -37,6 +40,8 @@ export class PerfilComponent {
   readonly erroPerfil = signal('');
   readonly erro = signal('');
   readonly mensagem = signal('');
+  readonly erroFavorito = signal('');
+  readonly favoritosSalvando = signal<ReadonlySet<number>>(new Set());
   readonly paginacao = signal<{
     next: string | null;
     previous: string | null;
@@ -104,6 +109,27 @@ export class PerfilComponent {
     this.abaAtiva.set(aba);
     this.numero = 1;
     this.carregar();
+  }
+  removerFavorito(local: Local) {
+    if (this.favoritosSalvando().has(local.id)) return;
+    this.erroFavorito.set('');
+    this.favoritosSalvando.update((ids) => new Set(ids).add(local.id));
+    this.servicoFavoritos
+      .remover(local.id)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() =>
+          this.favoritosSalvando.update((ids) => {
+            const atualizados = new Set(ids);
+            atualizados.delete(local.id);
+            return atualizados;
+          }),
+        ),
+      )
+      .subscribe({
+        next: () => this.favoritos.update((locais) => locais.filter((item) => item.id !== local.id)),
+        error: () => this.erroFavorito.set('Não foi possível remover este local dos favoritos. Tente novamente.'),
+      });
   }
   mudar(delta: number) {
     this.numero += delta;

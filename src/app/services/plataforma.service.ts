@@ -102,10 +102,20 @@ export class PlataformaService {
       params: { page },
     });
   }
-  meusFavoritos(page: number) {
+  meusFavoritos(page: number, pageSize = 20) {
     return this.http.get<Pagina<Local>>(this.base + '/me/favoritos/', {
       context: this.contexto(),
-      params: { page },
+      params: { page, page_size: pageSize },
+    });
+  }
+  adicionarFavorito(id: number) {
+    return this.http.put<void>(`${this.base}/me/favoritos/${id}/`, null, {
+      context: this.contexto(),
+    });
+  }
+  removerFavorito(id: number) {
+    return this.http.delete<void>(`${this.base}/me/favoritos/${id}/`, {
+      context: this.contexto(),
     });
   }
   private readonly http = inject(HttpClient);

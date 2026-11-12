@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { PerfilComponent } from './perfil.component';
 import { PlataformaService, PerfilAtual } from '../services/plataforma.service';
+import { FavoritosService } from '../services/favoritos.service';
 import { SessaoService } from '../auth/sessao.service';
 import { signal } from '@angular/core';
 
@@ -24,6 +25,10 @@ describe('Perfil real', () => {
       providers: [
         provideRouter([]),
         { provide: SessaoService, useValue: { perfil: signal(null) } },
+        {
+          provide: FavoritosService,
+          useValue: { remover: vi.fn().mockReturnValue(of(void 0)) },
+        },
         {
           provide: PlataformaService,
           useValue: {
