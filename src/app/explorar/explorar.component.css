@@ -228,6 +228,17 @@ fieldset label {
 .detail-actions {
   flex: 0 0 auto;
 }
+.detail-footer-actions {
+  display: flex;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.detail-footer-actions .secondary-btn {
+  min-height: 44px;
+  padding: 10px 18px;
+  font-size: 0.8125rem;
+}
 .login-modal-note {
   display: flex;
   align-items: flex-start;

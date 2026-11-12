@@ -9,6 +9,8 @@ import { RouteFocusService } from './accessibility/route-focus.service';
   selector: 'app-root',
   styleUrl: './app.css',
   template: `<app-header />
-    <div id="conteudo" tabindex="-1"><router-outlet /></div><app-accessibility-panel />`,
+    <div id="conteudo" tabindex="-1"><router-outlet /></div>
+    <p class="visually-hidden" aria-live="polite" aria-atomic="true">{{ routeFocus.announcement() }}</p>
+    <app-accessibility-panel />`,
 })
-export class App { private readonly routeFocus = inject(RouteFocusService); }
+export class App { readonly routeFocus = inject(RouteFocusService); }

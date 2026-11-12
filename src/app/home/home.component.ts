@@ -29,6 +29,13 @@ export class HomeComponent {
   readonly avisoFavorito = signal('');
   readonly modalLoginFavorito = signal(false);
   readonly locaisSalvando = signal<ReadonlySet<number>>(new Set());
+  readonly categoriasRapidas = [
+    { valor: 'restaurante', nome: 'Restaurantes' },
+    { valor: 'hospital', nome: 'Hospitais' },
+    { valor: 'shopping', nome: 'Shopping' },
+    { valor: 'parque', nome: 'Parques' },
+    { valor: 'comércio', nome: 'Comércio' },
+  ];
   nome = ''; categoria = ''; necessidade = ''; recurso = ''; destaque = true; numeroPagina = 1;
   private versao = 0;
   constructor() {

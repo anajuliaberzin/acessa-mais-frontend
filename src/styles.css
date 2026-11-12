@@ -8,6 +8,10 @@
 @import 'leaflet/dist/leaflet.css';
 :root {
   color-scheme: light;
+  --motion-fast: 150ms;
+  --motion-base: 250ms;
+  --motion-slow: 400ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --primary: #4e4be5;
   --ink: #171a30;
   --muted: #5d6681;
@@ -19,6 +23,71 @@
   --bs-body-font-family: var(--app-font);
   --bs-body-color: var(--ink);
   --bs-secondary-color: var(--muted);
+}
+.reveal {
+  animation: reveal-in var(--motion-slow) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 80ms);
+}
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+#conteudo > :not(router-outlet) {
+  animation: route-fade 200ms ease-out both;
+}
+@keyframes route-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes skeleton-shimmer {
+  to { background-position: -200% 0; }
+}
+.place-skeleton,
+.result-skeleton {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: linear-gradient(100deg, var(--soft) 25%, var(--surface) 45%, var(--soft) 65%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 400ms linear infinite;
+}
+.result-skeleton {
+  min-height: 190px;
+}
+.leaflet-container .map-dot {
+  position: relative;
+  overflow: visible;
+  color: #fff;
+}
+.leaflet-container .map-pin-motion {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: inherit;
+  background: inherit;
+  animation: map-pin-drop 350ms var(--ease-out) both;
+}
+.leaflet-container .map-pin-motion::after {
+  position: absolute;
+  inset: -5px;
+  border: 2px solid currentColor;
+  border-radius: inherit;
+  content: '';
+  animation: map-pin-pulse 350ms ease-out 1 both;
+}
+@keyframes map-pin-drop {
+  0% { opacity: 0; transform: translateY(-8px) scale(0.85); }
+  70% { opacity: 1; transform: translateY(0) scale(1.05); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes map-pin-pulse {
+  0% { opacity: 0.7; transform: scale(0.7); }
+  100% { opacity: 0; transform: scale(1.35); }
 }
 * {
   box-sizing: border-box;
@@ -85,6 +154,21 @@ p {
 }
 button {
   cursor: pointer;
+}
+button:not(:disabled),
+a.primary-btn,
+a.secondary-btn {
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+button:not(:disabled):hover,
+a.primary-btn:hover,
+a.secondary-btn:hover {
+  transform: translateY(-1px);
+}
+button:not(:disabled):active,
+a.primary-btn:active,
+a.secondary-btn:active {
+  transform: scale(0.97);
 }
 button:disabled {
   cursor: not-allowed;
@@ -209,6 +293,24 @@ input[type='radio'] {
   border-color: #e9b1ab;
   color: #ad3530;
 }
+.place-card-reveal,
+.result-card-reveal {
+  min-width: 0;
+  height: 100%;
+}
+.place-card-reveal > .place-card,
+.result-card-reveal > .result-card {
+  height: 100%;
+  transition:
+    transform var(--motion-base) var(--ease-out),
+    box-shadow var(--motion-base) var(--ease-out),
+    border-color var(--motion-base) var(--ease-out);
+}
+.place-card-reveal > .place-card:hover,
+.result-card-reveal > .result-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px #20264618;
+}
 .page-heading {
   margin-bottom: 28px;
 }
@@ -261,7 +363,18 @@ input[type='radio'] {
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    transition: none !important;
-    animation: none !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    animation-delay: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
+}
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after {
+  scroll-behavior: auto !important;
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+  animation-delay: 0.01ms !important;
+  animation-iteration-count: 1 !important;
 }

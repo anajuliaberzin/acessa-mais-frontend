@@ -112,7 +112,7 @@
       }
       <section [attr.aria-busy]="carregando()">
         @if (carregando()) {
-          <p class="empty-state" role="status">Buscando locais em Sorocaba…</p>
+          <p class="visually-hidden" role="status">Buscando locais em Sorocaba…</p>
         }
         @if (erro()) {
           <div class="empty-state" role="alert">
@@ -129,7 +129,13 @@
           </div>
         }
         <div class="results-grid">
-          @for (local of pagina()?.results; track local.id) {
+          @if (carregando()) {
+            @for (skeleton of [1, 2, 3, 4, 5, 6]; track skeleton) {
+              <div class="result-skeleton" aria-hidden="true"></div>
+            }
+          } @else {
+          @for (local of pagina()?.results; track local.id; let i = $index) {
+            <div class="result-card-reveal reveal" [style.--i]="i">
             <article class="result-card surface">
               <div class="result-card-heading">
                 <h3>{{ local.nome }}</h3>
@@ -155,9 +161,16 @@
               }}</span>
               <button class="secondary-btn" (click)="abrir(local)" [attr.aria-label]="'Ver informações de ' + local.nome">Ver informações</button>
             </article>
+            </div>
+          }
           }
         </div>
       </section>
+      @if (!carregando()) {
+        @if (pagina(); as p) {
+          <p class="visually-hidden" aria-live="polite" aria-atomic="true">{{ p.results.length }} locais carregados.</p>
+        }
+      }
       @if (pagina(); as p) {
         @if (p.next || p.previous) {
           <nav class="pagination" aria-label="Paginação dos locais">
@@ -226,9 +239,12 @@
             </p>
           }
           <app-avaliacoes-local [local]="local" (localAtualizado)="atualizarLocal($event)" />
-          <a class="secondary-btn" routerLink="/reportar"
-            ><i class="bi bi-exclamation-triangle" aria-hidden="true"></i>Reportar problema</a
-          >
+          <div class="detail-footer-actions">
+            <a class="secondary-btn" routerLink="/reportar">
+              <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+              Reportar problema
+            </a>
+          </div>
         </section>
       }
     </div>

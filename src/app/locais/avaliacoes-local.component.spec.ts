@@ -87,6 +87,8 @@ describe('AvaliacoesLocalComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Entre na sua conta');
+    expect(fixture.nativeElement.querySelector('.login-prompt-action')).not.toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Nenhuma avaliação publicada ainda');
     expect(api.minhaAvaliacaoLocal).not.toHaveBeenCalled();
   });
 });

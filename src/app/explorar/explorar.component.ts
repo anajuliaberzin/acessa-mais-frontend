@@ -180,6 +180,7 @@ export class ExplorarComponent implements AfterViewInit, OnDestroy {
       L.marker([local.latitude, local.longitude], {
         icon: L.divIcon({
           className: 'map-dot ' + classe,
+          html: '<span class="map-pin-motion" aria-hidden="true"></span>',
           iconSize: [24, 24],
           iconAnchor: [12, 12],
         }),

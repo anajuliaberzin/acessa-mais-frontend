@@ -11,9 +11,16 @@
   </p>
 
   @if (!autenticado()) {
-    <p class="login-prompt">
-      <a routerLink="/login">Entre na sua conta</a> para avaliar este local.
-    </p>
+    <div class="login-prompt">
+      <span class="login-prompt-icon" aria-hidden="true"><i class="bi bi-chat-heart"></i></span>
+      <div class="login-prompt-copy">
+        <strong>Compartilhe sua experiência</strong>
+        <p>Entre na sua conta para avaliar este local.</p>
+      </div>
+      <a class="login-prompt-action" routerLink="/login">
+        Entrar na conta <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
   } @else {
     <form (ngSubmit)="salvar()">
       <fieldset [disabled]="salvando() || carregando()">
@@ -88,7 +95,13 @@
       </article>
     } @empty {
       @if (!carregando() && !erro()) {
-        <p class="empty-reviews">Nenhuma avaliação publicada.</p>
+        <div class="empty-reviews" role="status">
+          <i class="bi bi-chat-square-text" aria-hidden="true"></i>
+          <div>
+            <strong>Nenhuma avaliação publicada ainda</strong>
+            <span>As opiniões da comunidade aparecerão aqui.</span>
+          </div>
+        </div>
       }
     }
   </div>
