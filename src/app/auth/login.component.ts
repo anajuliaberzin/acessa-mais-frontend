@@ -10,45 +10,101 @@ import { AuthService } from './auth.service';
   selector: 'app-login',
   imports: [ReactiveFormsModule, RouterLink],
   template: `
-    <main>
-      <section aria-labelledby="login-title">
-        <a routerLink="/home" class="brand">Acessa+</a>
-        <h1 id="login-title">Entre na sua conta</h1>
-        <p>Você pode continuar explorando os locais sem entrar.</p>
-        @if (registered) { <p class="alert alert-success" role="status">Conta criada! Entre com seu usuário e senha.</p> }
-        @if (expired) { <p role="status">Sua sessão expirou. Entre novamente.</p> }
+    <main class="login-page">
+      <section class="surface login-card" aria-labelledby="login-title">
+        <a routerLink="/home" class="brand" aria-label="Acessa+, ir para o início">
+          <span class="brand-mark"><i class="bi bi-universal-access" aria-hidden="true"></i></span>
+          <span>Acessa<span class="brand-plus">+</span></span>
+        </a>
+        <div class="intro">
+          <span class="eyebrow">Bem-vindo de volta</span>
+          <h1 id="login-title">Entre na sua conta</h1>
+          <p>Acesse seu perfil e acompanhe suas contribuições pela cidade.</p>
+        </div>
+        @if (registered) {
+          <p class="notice notice-success" role="status"><i class="bi bi-check-circle" aria-hidden="true"></i>Conta criada! Entre com seu usuário e senha.</p>
+        }
+        @if (expired) {
+          <p class="notice notice-info" role="status"><i class="bi bi-clock-history" aria-hidden="true"></i>Sua sessão expirou. Entre novamente.</p>
+        }
         <form [formGroup]="form" (ngSubmit)="submit()" [attr.aria-busy]="loading()">
-          <label for="username">Usuário</label>
-          <input id="username" autocomplete="username" formControlName="username" [attr.aria-invalid]="form.controls.username.touched && form.controls.username.invalid" aria-describedby="login-error" required />
-          <label for="password">Senha</label>
-          <input id="password" type="password" autocomplete="current-password"
-            formControlName="password" [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid" aria-describedby="login-error" required />
-          @if (error()) { <p id="login-error" class="error" role="alert">{{ error() }}</p> }
-          <button type="submit" [disabled]="loading()">
+          <div class="field">
+            <label for="username">Usuário</label>
+            <div class="input-wrap">
+              <i class="bi bi-person" aria-hidden="true"></i>
+              <input id="username" class="form-control" autocomplete="username" formControlName="username"
+                [attr.aria-invalid]="form.controls.username.touched && form.controls.username.invalid"
+                [attr.aria-describedby]="error() ? 'login-error' : null" required />
+            </div>
+          </div>
+          <div class="field">
+            <label for="password">Senha</label>
+            <div class="input-wrap">
+              <i class="bi bi-lock" aria-hidden="true"></i>
+              <input id="password" class="form-control" type="password" autocomplete="current-password"
+                formControlName="password"
+                [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid"
+                [attr.aria-describedby]="error() ? 'login-error' : null" required />
+            </div>
+          </div>
+          @if (error()) { <p id="login-error" class="notice notice-error" role="alert"><i class="bi bi-exclamation-circle" aria-hidden="true"></i>{{ error() }}</p> }
+          <button class="primary-btn submit-btn" type="submit" [disabled]="loading()">
             {{ loading() ? 'Entrando…' : 'Entrar' }}
+            @if (!loading()) { <i class="bi bi-arrow-right" aria-hidden="true"></i> }
           </button>
         </form>
-        <p>Ainda não tem conta? <a routerLink="/cadastro" [queryParams]="{ returnUrl: returnUrl }">Criar conta</a></p>
-        <a routerLink="/home">Continuar sem entrar</a>
+        <div class="account-prompt">
+          <span>Ainda não tem conta?</span>
+          <a routerLink="/cadastro" [queryParams]="{ returnUrl: returnUrl }">Criar conta</a>
+        </div>
+        <a class="explore-link" routerLink="/home">
+          <i class="bi bi-compass" aria-hidden="true"></i>
+          Continuar explorando sem entrar
+        </a>
       </section>
     </main>
   `,
   styles: [`
-    main { min-height: calc(100vh - 73px); display: grid; place-items: center; padding: 24px; color: #1a2340; }
-    section { width: 100%; max-width: 440px; padding: 32px; border-radius: 24px;
-      background: white; box-shadow: 0 14px 40px #1b254012; }
-    .brand { font-size: 1.4rem; font-weight: 800; text-decoration: none; }
-    h1 { font-size: 1.8rem; margin-top: 28px; }
-    p { line-height: 1.5; }
-    form { display: grid; gap: 12px; margin: 24px 0; }
-    label { font-weight: 600; }
-    input { width: 100%; padding: 12px; border: 1px solid #d5daeb; border-radius: 99px; }
-    button { padding: 14px; border: 0; border-radius: 99px; background: #4e4be5;
-      color: white; font-weight: 700; cursor: pointer; }
-    button:disabled { opacity: .65; cursor: wait; }
-    a { color: #404ec4; }
-    .error { color: #a21b2d; margin: 0; }
-    :focus-visible { outline: 3px solid #4f5de1; outline-offset: 3px; }
+    .login-page { min-height: calc(100vh - 73px); display: grid; place-items: center; padding: 40px 20px 64px;
+      background: radial-gradient(ellipse at 50% 0, #eeecfb 0, transparent 62%); }
+    .login-card { width: 100%; max-width: 448px; padding: 36px; border-radius: 28px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-size: 1.125rem;
+      font-weight: 800; letter-spacing: -0.04em; text-decoration: none; }
+    .brand-mark { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 13px;
+      background: var(--soft); color: var(--primary); font-size: 1.25rem; }
+    .brand-plus { color: var(--primary); }
+    .intro { margin-top: 30px; }
+    .eyebrow { color: var(--primary); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.09em;
+      text-transform: uppercase; }
+    h1 { margin: 7px 0 8px; font-size: 1.75rem; }
+    .intro p { margin: 0; font-size: 0.8125rem; line-height: 1.6; }
+    form { display: grid; gap: 18px; margin: 26px 0 20px; }
+    .field { display: grid; gap: 7px; }
+    label { font-size: 0.8125rem; font-weight: 600; }
+    .input-wrap { position: relative; }
+    .input-wrap > i { position: absolute; top: 50%; left: 15px; z-index: 1; color: var(--muted);
+      font-size: 1rem; transform: translateY(-50%); pointer-events: none; }
+    .input-wrap .form-control { min-height: 50px; padding-left: 44px; border-radius: 15px; }
+    .input-wrap .form-control[aria-invalid='true'] { border-color: #b32632; }
+    .submit-btn { width: 100%; min-height: 50px; margin-top: 2px; }
+    .notice { display: flex; align-items: flex-start; gap: 9px; margin: 18px 0 0; padding: 12px 14px;
+      border: 1px solid transparent; border-radius: 14px; font-size: 0.75rem; line-height: 1.5; }
+    .notice i { flex: 0 0 auto; margin-top: 1px; }
+    .notice-success { border-color: #b9e2d0; background: #eff9f4; color: #176b4a; }
+    .notice-info { border-color: #d7d9f6; background: #f4f4ff; color: #4744a7; }
+    .notice-error { border-color: #f0c4c6; background: #fff4f4; color: #a21b2d; }
+    .account-prompt { display: flex; justify-content: center; flex-wrap: wrap; gap: 5px;
+      color: var(--muted); font-size: 0.75rem; }
+    .account-prompt a { font-weight: 700; }
+    .explore-link { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 18px;
+      padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.75rem;
+      text-decoration: none; }
+    .explore-link:hover { color: var(--primary); }
+    @media (max-width: 480px) {
+      .login-page { min-height: calc(100vh - 73px); padding: 24px 16px 48px; }
+      .login-card { padding: 26px 22px; border-radius: 24px; }
+      .intro { margin-top: 24px; }
+    }
   `],
 })
 export class LoginComponent {
